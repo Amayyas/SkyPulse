@@ -1,5 +1,8 @@
 # SkyPulse ⛅
 
+[![CI](https://github.com/Amayyas/SkyPulse/actions/workflows/ci.yml/badge.svg)](https://github.com/Amayyas/SkyPulse/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Une application météo moderne et intuitive développée avec Flutter, offrant des prévisions météorologiques en temps réel avec un design dynamique qui s'adapte à l'heure de la journée.
 
 ## ✨ Fonctionnalités
