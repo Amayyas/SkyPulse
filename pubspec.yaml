@@ -39,7 +39,7 @@ dependencies:
   flutter_riverpod: ^3.0.3
   http: ^1.6.0
   geolocator: ^14.0.2
-  geocoding: ^4.0.0
+  geocoding: ^5.0.0
   intl: ^0.20.2
   shimmer: ^3.0.0
   flutter_animate: ^4.5.2
