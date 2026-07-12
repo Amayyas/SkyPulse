@@ -1,0 +1,59 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior in SkyPulse.
+title: "[BUG]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug! Please fill out the form below as accurately as possible.
+  - type: checkboxes
+    id: platforms
+    attributes:
+      label: Affected Platforms
+      description: Check all platforms where you reproduced the issue.
+      options:
+        - label: Android
+        - label: iOS
+        - label: Web
+        - label: Windows
+        - label: macOS
+        - label: Linux
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment Info
+      placeholder: e.g. Flutter 3.44.6, Dart 3.12.2, Android Emulator API 34, iPhone 15 Pro iOS 17
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Explain the steps required to reproduce the behavior.
+      placeholder: |
+        1. Open the app
+        2. Tap on the search bar
+        3. Search for "Bourg-et-Comin"
+        4. See incorrect city name...
+    validations:
+      required: true
+  - type: textarea
+    id: expected-actual
+    attributes:
+      label: Expected vs. Actual Behavior
+      description: Provide a clear description of what you expected to happen and what actually happened.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs / Stack Traces
+      description: Paste any crash logs or console output here (surround with code blocks).
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or Video
+      description: If applicable, add screenshots or screen recordings to help explain your problem.
