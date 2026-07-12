@@ -26,3 +26,9 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    ignore:
+      # Kotlin 2.4 turns AGP 9's DSL deprecations into hard script-compilation
+      # errors, and android/app/build.gradle.kts still uses the old DSL. Any
+      # Kotlin bump therefore fails the Android build. Remove this ignore once
+      # the Gradle config is migrated to the current Flutter template (#54).
+      - dependency-name: "org.jetbrains.kotlin.android"
