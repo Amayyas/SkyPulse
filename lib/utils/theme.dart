@@ -43,9 +43,9 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: const Color(0xFF0D1B2A),
       cardTheme: CardThemeData(
-        color: const Color(0xFF1B263B).withOpacity(0.8),
+        color: const Color(0xFF1B263B).withValues(alpha: 0.8),
         elevation: 4,
-        shadowColor: Colors.black.withOpacity(0.3),
+        shadowColor: Colors.black.withValues(alpha: 0.3),
       ),
       textTheme: GoogleFonts.outfitTextTheme().apply(
         bodyColor: Colors.white,
@@ -71,9 +71,9 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: const Color(0xFFFFF0F5),
       cardTheme: CardThemeData(
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withValues(alpha: 0.9),
         elevation: 2,
-        shadowColor: const Color(0xFFFF6B9D).withOpacity(0.2),
+        shadowColor: const Color(0xFFFF6B9D).withValues(alpha: 0.2),
       ),
       textTheme: GoogleFonts.outfitTextTheme().apply(
         bodyColor: const Color(0xFF5D4E6D),
@@ -101,7 +101,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: Colors.white,
         elevation: 2,
-        shadowColor: const Color(0xFF42A5F5).withOpacity(0.15),
+        shadowColor: const Color(0xFF42A5F5).withValues(alpha: 0.15),
       ),
       textTheme: GoogleFonts.outfitTextTheme().apply(
         bodyColor: const Color(0xFF1565C0),
@@ -129,7 +129,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: Colors.white,
         elevation: 3,
-        shadowColor: const Color(0xFF1E88E5).withOpacity(0.2),
+        shadowColor: const Color(0xFF1E88E5).withValues(alpha: 0.2),
       ),
       textTheme: GoogleFonts.outfitTextTheme().apply(
         bodyColor: const Color(0xFF01579B),
@@ -155,9 +155,9 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: const Color(0xFFFFF3E0),
       cardTheme: CardThemeData(
-        color: Colors.white.withOpacity(0.95),
+        color: Colors.white.withValues(alpha: 0.95),
         elevation: 2,
-        shadowColor: const Color(0xFFFF6F00).withOpacity(0.2),
+        shadowColor: const Color(0xFFFF6F00).withValues(alpha: 0.2),
       ),
       textTheme: GoogleFonts.outfitTextTheme().apply(
         bodyColor: const Color(0xFFBF360C),
@@ -183,12 +183,12 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: const Color(0xFF1A237E),
       cardTheme: CardThemeData(
-        color: const Color(0xFF4527A0).withOpacity(0.7),
+        color: const Color(0xFF4527A0).withValues(alpha: 0.7),
         elevation: 3,
-        shadowColor: Colors.black.withOpacity(0.4),
+        shadowColor: Colors.black.withValues(alpha: 0.4),
       ),
       textTheme: GoogleFonts.outfitTextTheme().apply(
-        bodyColor: Colors.white.withOpacity(0.95),
+        bodyColor: Colors.white.withValues(alpha: 0.95),
         displayColor: Colors.white,
       ),
       appBarTheme: const AppBarTheme(
