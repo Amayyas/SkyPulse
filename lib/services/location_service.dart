@@ -26,14 +26,15 @@ class LocationService {
 
     // Add timeout
     try {
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      ).timeout(
-        const Duration(seconds: 10),
-        onTimeout: () {
-          throw Exception('Location request timed out');
-        },
-      );
+      final position =
+          await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high,
+          ).timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              throw Exception('Location request timed out');
+            },
+          );
       return position;
     } catch (e) {
       rethrow;
