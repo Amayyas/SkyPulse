@@ -1,0 +1,41 @@
+name: Feature request
+description: Suggest something SkyPulse should do.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a look at the [open issues](https://github.com/Amayyas/SkyPulse/issues)
+        first — a fair amount of the obvious roadmap is already tracked.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the situation you are in, not the solution you have in mind. It is easier to design a good fix for a well-described problem.
+      placeholder: "I travel between two cities and have to re-search the second one every time."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: What would you like to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+
+  - type: dropdown
+    id: contributing
+    attributes:
+      label: Would you be willing to implement this?
+      options:
+        - "Yes, if it's accepted"
+        - "Maybe, with guidance"
+        - "No, just suggesting"
+    validations:
+      required: true
