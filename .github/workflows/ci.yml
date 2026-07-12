@@ -5,17 +5,11 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  # The merge queue re-tests each pull request against the tip of main before it
-  # lands. Without this trigger the required checks would never report on a queue
-  # entry, and queued pull requests would hang forever.
-  merge_group:
 
+# A newer push to the same branch makes the in-flight run obsolete.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  # A newer push to a pull request makes the in-flight run obsolete. A merge
-  # queue run must never be cancelled: the queue is waiting on its result, and
-  # cancelling it would eject the pull request.
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 env:
   FLUTTER_VERSION: "3.44.4"
