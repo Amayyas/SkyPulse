@@ -165,21 +165,19 @@ Si la géolocalisation ne fonctionne pas :
 
 ## 🤝 Contribution
 
-Les contributions sont les bienvenues ! Pour contribuer :
+Les contributions sont les bienvenues. **Tout est décrit dans [CONTRIBUTING.md](CONTRIBUTING.md)** :
+prérequis, installation (attention, la génération de code est **obligatoire**),
+configuration de la clé API, conventions de commit et critères de validation.
 
-1. **Fork** le projet
-2. Créez une branche pour votre feature (`git checkout -b feature/AmazingFeature`)
-3. Committez vos changements (`git commit -m 'Add some AmazingFeature'`)
-4. Poussez vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrez une **Pull Request**
+Deux choses à savoir avant de commencer :
 
-### Lignes directrices
+- Les issues étiquetées [`good first issue`](https://github.com/Amayyas/SkyPulse/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+  sont cadrées et autonomes. Commentez-les avant de vous lancer.
+- `main` est protégée : elle n'accepte que des pull requests, et les 7 checks
+  de CI doivent être verts.
 
-- Suivez les conventions de code Flutter/Dart
-- Ajoutez des tests pour les nouvelles fonctionnalités
-- Mettez à jour la documentation si nécessaire
-- Assurez-vous que tous les tests passent (`flutter test`)
-- Vérifiez qu'il n'y a pas d'erreurs d'analyse (`flutter analyze`)
+Ce projet suit un [Code de conduite](CODE_OF_CONDUCT.md). Pour les failles de
+sécurité, voir [SECURITY.md](SECURITY.md) — jamais d'issue publique.
 
 ## 📱 Plateformes supportées
 

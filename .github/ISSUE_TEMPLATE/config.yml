@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question or idea
+    url: https://github.com/Amayyas/SkyPulse/discussions
+    about: For questions, help and open-ended ideas, start a discussion instead.
+  - name: Report a security vulnerability
+    url: https://github.com/Amayyas/SkyPulse/security/advisories/new
+    about: Please report vulnerabilities privately, never as a public issue.

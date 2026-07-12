@@ -1,0 +1,80 @@
+name: Bug report
+description: Something in SkyPulse behaves incorrectly.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file this.
+
+        **Before you start:** several known bugs are platform-specific, and the app
+        currently falls back to **fabricated demo weather** whenever an API call fails
+        (#1). So if you are seeing suspiciously stable weather for "Paris (Demo)", the
+        real problem is probably your API key or your network — not the thing you are
+        about to report.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you get instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the app
+        2. Tap search
+        3. Type "Saint-Étienne"
+        4. No suggestions appear
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: platforms
+    attributes:
+      label: Platforms you reproduced this on
+      description: Only tick what you actually tested. Several bugs in this repo affect one platform and not others.
+      options:
+        - label: Android
+        - label: iOS
+        - label: Web
+        - label: Linux
+        - label: macOS
+        - label: Windows
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Output of `flutter --version`, plus the device or emulator.
+      placeholder: "Flutter 3.44.4, Dart 3.9.0, Pixel 7 (Android 14)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or stack trace
+      description: Paste any console output. It will be formatted as code automatically.
+      render: shell
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If the bug is visual, a screenshot is worth a page of prose.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched the existing issues and this is not a duplicate.
+          required: true
+        - label: I ran `dart run build_runner build --delete-conflicting-outputs` (required after a fresh clone).
