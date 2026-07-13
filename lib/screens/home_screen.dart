@@ -20,7 +20,7 @@ class HomeScreen extends ConsumerWidget {
         title: weatherAsync.when(
           data: (weather) => Text(weather.cityName),
           loading: () => const Text('Chargement...'),
-          error: (_, __) => const Text('Erreur'),
+          error: (_, _) => const Text('Erreur'),
         ),
         actions: [
           IconButton(
