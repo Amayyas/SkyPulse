@@ -5,6 +5,7 @@ import 'package:skypulse/providers/weather_provider.dart';
 import 'package:skypulse/screens/search_screen.dart';
 import 'package:skypulse/widgets/current_weather.dart';
 import 'package:skypulse/widgets/daily_forecast.dart';
+import 'package:skypulse/widgets/error_view.dart';
 import 'package:skypulse/widgets/hourly_forecast.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -52,35 +53,18 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
             loading: () => _buildShimmerEffect(),
-            error: (error, stack) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Erreur de chargement des prévisions: $error'),
-                  ElevatedButton(
-                    onPressed: () {
-                      ref.invalidate(forecastProvider);
-                    },
-                    child: const Text('Réessayer'),
-                  ),
-                ],
-              ),
+            error: (error, stack) => ErrorView(
+              error: error,
+              onRetry: () => ref.invalidate(forecastProvider),
             ),
           ),
           loading: () => _buildShimmerEffect(),
-          error: (error, stack) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Erreur de chargement: $error'),
-                ElevatedButton(
-                  onPressed: () {
-                    ref.invalidate(currentWeatherProvider);
-                  },
-                  child: const Text('Réessayer'),
-                ),
-              ],
-            ),
+          error: (error, stack) => ErrorView(
+            error: error,
+            onRetry: () {
+              ref.invalidate(currentWeatherProvider);
+              ref.invalidate(forecastProvider);
+            },
           ),
         ),
       ),

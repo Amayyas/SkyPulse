@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:skypulse/services/weather_exception.dart';
 import 'package:skypulse/services/weather_service.dart';
 import 'package:skypulse/models/weather_model.dart';
 
@@ -82,6 +83,107 @@ void main() {
 
       expect(result, isEmpty);
       verifyNever(mockClient.get(any));
+    });
+
+    // The service used to answer every failure with fabricated demo weather.
+    // A failing request must now throw, and throw something the UI can tell
+    // apart -- otherwise a broken API key, a dead network and an entire
+    // platform unable to open a socket all look like a working app.
+    group('failures', () {
+      void stub(int statusCode, [String body = '']) {
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response(body, statusCode));
+      }
+
+      test('401 throws InvalidApiKeyException', () {
+        stub(401);
+        expect(
+          () => weatherService.getCurrentWeather(48.8566, 2.3522),
+          throwsA(isA<InvalidApiKeyException>()),
+        );
+      });
+
+      test('404 throws CityNotFoundException carrying the query', () {
+        stub(404);
+        expect(
+          () => weatherService.getWeatherByCity('Nowhereville'),
+          throwsA(
+            isA<CityNotFoundException>().having(
+              (e) => e.cityName,
+              'cityName',
+              'Nowhereville',
+            ),
+          ),
+        );
+      });
+
+      test('429 throws RateLimitException', () {
+        stub(429);
+        expect(
+          () => weatherService.getForecast(48.8566, 2.3522),
+          throwsA(isA<RateLimitException>()),
+        );
+      });
+
+      test('500 throws WeatherApiException carrying the status code', () {
+        stub(500);
+        expect(
+          () => weatherService.getCurrentWeather(48.8566, 2.3522),
+          throwsA(
+            isA<WeatherApiException>().having(
+              (e) => e.statusCode,
+              'statusCode',
+              500,
+            ),
+          ),
+        );
+      });
+
+      test('a network failure throws NoConnectionException', () {
+        when(
+          mockClient.get(any),
+        ).thenThrow(http.ClientException('Failed host lookup'));
+        expect(
+          () => weatherService.getCurrentWeather(48.8566, 2.3522),
+          throwsA(isA<NoConnectionException>()),
+        );
+      });
+
+      test(
+        'a 200 with an unexpected body throws MalformedResponseException',
+        () {
+          stub(200, '{"unexpected": true}');
+          expect(
+            () => weatherService.getCurrentWeather(48.8566, 2.3522),
+            throwsA(isA<MalformedResponseException>()),
+          );
+        },
+      );
+
+      test('a failing search throws instead of returning an empty list', () {
+        stub(500);
+        expect(
+          () => weatherService.searchCities('Paris'),
+          throwsA(isA<WeatherApiException>()),
+        );
+      });
+
+      test('a search with no match is not an error', () async {
+        stub(200, '[]');
+        expect(await weatherService.searchCities('Zzzzzz'), isEmpty);
+      });
+
+      test('no failure path ever returns fabricated weather', () {
+        for (final code in [401, 404, 429, 500, 503]) {
+          stub(code);
+          expect(
+            () => weatherService.getCurrentWeather(48.8566, 2.3522),
+            throwsA(isA<WeatherException>()),
+            reason: 'HTTP $code must throw, never return demo data',
+          );
+        }
+      });
     });
 
     // Every endpoint must be requested over HTTPS with percent-encoded query
