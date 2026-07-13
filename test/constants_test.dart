@@ -43,8 +43,19 @@ void main() {
       expect(AppConstants.openWeatherMapApiKey, isNotEmpty);
     });
 
-    test('Base URL is valid', () {
-      expect(AppConstants.baseUrl, contains('openweathermap.org'));
+    test('API host carries no scheme, so it cannot smuggle in cleartext', () {
+      expect(AppConstants.apiHost, 'api.openweathermap.org');
+      expect(AppConstants.apiHost, isNot(contains('://')));
+    });
+
+    test('endpoint paths are absolute', () {
+      for (final path in [
+        AppConstants.currentWeatherPath,
+        AppConstants.forecastPath,
+        AppConstants.geocodingPath,
+      ]) {
+        expect(path, startsWith('/'));
+      }
     });
   });
 }

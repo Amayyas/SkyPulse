@@ -2,7 +2,20 @@ class AppConstants {
   // TODO: Remplacez cette clé par votre propre clé API OpenWeatherMap
   // Obtenez votre clé gratuite sur : https://openweathermap.org/api
   static const String openWeatherMapApiKey = 'YOUR_API_KEY_HERE';
-  static const String baseUrl = 'https://api.openweathermap.org/data/2.5';
+
+  /// Hôte commun à l'API météo et à l'API de géocodage.
+  ///
+  /// Exposé en hôte + chemins plutôt qu'en URL complète : les requêtes se
+  /// construisent avec `Uri.https`, qui impose le schéma et encode les
+  /// paramètres. Une URL assemblée à la main laisse passer les deux bugs que
+  /// ce découpage rend impossibles — le HTTP en clair et les accents non
+  /// encodés.
+  static const String apiHost = 'api.openweathermap.org';
+
+  static const String currentWeatherPath = '/data/2.5/weather';
+  static const String forecastPath = '/data/2.5/forecast';
+  static const String geocodingPath = '/geo/1.0/direct';
+
   static const String iconUrl = 'https://openweathermap.org/img/wn/';
 
   // Traductions des descriptions météo en français

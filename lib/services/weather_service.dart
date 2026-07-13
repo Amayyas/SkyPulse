@@ -9,10 +9,25 @@ class WeatherService {
 
   WeatherService({http.Client? client}) : client = client ?? http.Client();
 
+  /// Construit une requête HTTPS dont les paramètres sont percent-encodés.
+  ///
+  /// Ne jamais assembler une URL par interpolation de chaîne : un nom de ville
+  /// contient des espaces et des accents (`New York`, `Saint-Étienne`) qui sont
+  /// illégaux tels quels dans une URI. `Uri.https` impose le schéma et encode
+  /// les valeurs.
+  Uri _apiUri(String path, Map<String, String> queryParameters) {
+    return Uri.https(AppConstants.apiHost, path, {
+      ...queryParameters,
+      'appid': AppConstants.openWeatherMapApiKey,
+    });
+  }
+
   Future<Weather> getCurrentWeather(double lat, double lon) async {
-    final url = Uri.parse(
-      '${AppConstants.baseUrl}/weather?lat=$lat&lon=$lon&units=metric&appid=${AppConstants.openWeatherMapApiKey}',
-    );
+    final url = _apiUri(AppConstants.currentWeatherPath, {
+      'lat': '$lat',
+      'lon': '$lon',
+      'units': 'metric',
+    });
 
     final response = await client.get(url);
 
@@ -24,9 +39,10 @@ class WeatherService {
   }
 
   Future<Weather> getWeatherByCity(String cityName) async {
-    final url = Uri.parse(
-      '${AppConstants.baseUrl}/weather?q=$cityName&units=metric&appid=${AppConstants.openWeatherMapApiKey}',
-    );
+    final url = _apiUri(AppConstants.currentWeatherPath, {
+      'q': cityName,
+      'units': 'metric',
+    });
 
     try {
       final response = await client.get(url);
@@ -42,9 +58,11 @@ class WeatherService {
   }
 
   Future<List<Weather>> getForecast(double lat, double lon) async {
-    final url = Uri.parse(
-      '${AppConstants.baseUrl}/forecast?lat=$lat&lon=$lon&units=metric&appid=${AppConstants.openWeatherMapApiKey}',
-    );
+    final url = _apiUri(AppConstants.forecastPath, {
+      'lat': '$lat',
+      'lon': '$lon',
+      'units': 'metric',
+    });
 
     try {
       final response = await client.get(url);
@@ -72,9 +90,7 @@ class WeatherService {
       return [];
     }
 
-    final url = Uri.parse(
-      'http://api.openweathermap.org/geo/1.0/direct?q=$query&limit=5&appid=${AppConstants.openWeatherMapApiKey}',
-    );
+    final url = _apiUri(AppConstants.geocodingPath, {'q': query, 'limit': '5'});
 
     try {
       final response = await client.get(url);
