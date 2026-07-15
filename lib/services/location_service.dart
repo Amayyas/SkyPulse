@@ -1,45 +1,41 @@
-import 'package:geolocator/geolocator.dart';
+import 'dart:async';
+// geolocator ships its own LocationServiceDisabledException; hide it so ours
+// (part of the app's sealed LocationException hierarchy) is unambiguous.
+import 'package:geolocator/geolocator.dart'
+    hide LocationServiceDisabledException;
+import 'package:skypulse/services/location_exception.dart';
 
 class LocationService {
-  Future<Position> getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
+  static const Duration _timeout = Duration(seconds: 10);
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
+  /// Returns the device position, or throws a [LocationException] naming the
+  /// exact reason it could not — so the UI can react to each case instead of
+  /// showing one generic message for all of them.
+  Future<Position> getCurrentLocation() async {
+    if (!await Geolocator.isLocationServiceEnabled()) {
+      throw const LocationServiceDisabledException();
     }
 
-    permission = await Geolocator.checkPermission();
+    var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
+        throw const LocationPermissionDeniedException();
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-        'Location permissions are permanently denied, we cannot request permissions.',
-      );
+      throw const LocationPermissionPermanentlyDeniedException();
     }
 
-    // Add timeout
     try {
-      final position =
-          await Geolocator.getCurrentPosition(
-            locationSettings: const LocationSettings(
-              accuracy: LocationAccuracy.high,
-            ),
-          ).timeout(
-            const Duration(seconds: 10),
-            onTimeout: () {
-              throw Exception('Location request timed out');
-            },
-          );
-      return position;
-    } catch (e) {
-      rethrow;
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
+      ).timeout(_timeout);
+    } on TimeoutException {
+      throw const LocationTimeoutException();
     }
   }
 }

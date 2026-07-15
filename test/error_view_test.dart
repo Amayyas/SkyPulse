@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:skypulse/services/location_exception.dart';
 import 'package:skypulse/services/weather_exception.dart';
 import 'package:skypulse/widgets/error_view.dart';
 
@@ -107,6 +108,65 @@ void main() {
 
       await tester.tap(find.text('Réessayer'));
       expect(retried, 1);
+    });
+  });
+
+  // #23: location failures used to arrive as raw strings and collapse into the
+  // generic message. Each is now named, and the one the user cannot fix from
+  // the app — a permanently-denied permission — offers a route to settings.
+  group('ErrorView location cases', () {
+    testWidgets('disabled location services is named', (tester) async {
+      await pump(tester, const LocationServiceDisabledException());
+      expect(find.text('Localisation désactivée'), findsOneWidget);
+    });
+
+    testWidgets('a denied permission is named', (tester) async {
+      await pump(tester, const LocationPermissionDeniedException());
+      expect(find.text('Localisation refusée'), findsOneWidget);
+    });
+
+    testWidgets('a timeout is named', (tester) async {
+      await pump(tester, const LocationTimeoutException());
+      expect(find.text('Position introuvable'), findsOneWidget);
+    });
+
+    testWidgets(
+      'a permanently-denied permission offers "open settings" over retry',
+      (tester) async {
+        await pump(
+          tester,
+          const LocationPermissionPermanentlyDeniedException(),
+        );
+
+        expect(find.text('Ouvrir les réglages'), findsOneWidget);
+        // Retry is still there as a secondary action, for after they return.
+        expect(find.text('Réessayer'), findsOneWidget);
+      },
+    );
+
+    testWidgets('other errors show no "open settings" button', (tester) async {
+      await pump(tester, const NoConnectionException('offline'));
+      expect(find.text('Ouvrir les réglages'), findsNothing);
+    });
+
+    testWidgets('the raw location exception text never reaches the UI', (
+      tester,
+    ) async {
+      const errors = <LocationException>[
+        LocationServiceDisabledException(),
+        LocationPermissionDeniedException(),
+        LocationPermissionPermanentlyDeniedException(),
+        LocationTimeoutException(),
+      ];
+
+      for (final error in errors) {
+        await pump(tester, error);
+        expect(
+          find.textContaining(error.message),
+          findsNothing,
+          reason: 'the technical message of $error leaked into the UI',
+        );
+      }
     });
   });
 }

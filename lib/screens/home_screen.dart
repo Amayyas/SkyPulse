@@ -73,6 +73,8 @@ class HomeScreen extends ConsumerWidget {
 
   Widget _buildShimmerEffect() {
     return SingleChildScrollView(
+      // Match the data and error views: pull-to-refresh must work while loading.
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
