@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:skypulse/models/weather_model.dart';
 import 'package:skypulse/widgets/weather_icon.dart';
 import 'package:skypulse/utils/constants.dart';
+import 'package:skypulse/utils/unit_utils.dart';
 
 class CurrentWeather extends StatelessWidget {
   final Weather weather;
@@ -55,7 +56,7 @@ class CurrentWeather extends StatelessWidget {
             _buildDetailItem(
               context,
               Icons.air,
-              '${weather.windSpeed} m/s',
+              formatWindSpeed(weather.windSpeed),
               'Vent',
             ),
             _buildDetailItem(
