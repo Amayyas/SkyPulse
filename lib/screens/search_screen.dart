@@ -15,15 +15,20 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _controller = TextEditingController();
-  final _weatherService = WeatherService();
+  late final WeatherService _weatherService;
   List<CitySuggestion> _suggestions = [];
   Timer? _debounce;
   bool _isLoading = false;
   Object? _error;
+  String? _lastQuery;
 
   @override
   void initState() {
     super.initState();
+    // Use the app-wide service via Riverpod instead of constructing one here:
+    // that keeps the screen testable with a mocked client, and avoids leaking
+    // an http.Client on every visit.
+    _weatherService = ref.read(weatherServiceProvider);
     _controller.addListener(_onSearchChanged);
   }
 
@@ -39,9 +44,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      if (_controller.text.length >= 2) {
-        _searchCities(_controller.text);
+      final query = _controller.text.trim();
+      // The controller notifies on every change, including cursor moves and
+      // selection. Only hit the network when the query text actually changed.
+      if (query.length >= 2) {
+        if (query != _lastQuery) _searchCities(query);
       } else {
+        _lastQuery = null;
         setState(() {
           _suggestions = [];
           _error = null;
@@ -51,6 +60,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Future<void> _searchCities(String query) async {
+    _lastQuery = query;
     setState(() {
       _isLoading = true;
       _error = null;
@@ -58,6 +68,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     try {
       final suggestions = await _weatherService.searchCities(query);
+      if (!mounted) return;
       setState(() {
         _suggestions = suggestions;
         _isLoading = false;
@@ -66,6 +77,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       // Une recherche qui échoue affichait auparavant une page blanche,
       // impossible à distinguer d'une ville qui n'existe pas — ou d'une appli
       // cassée. On dit ce qui s'est passé.
+      if (!mounted) return;
       setState(() {
         _error = e;
         _suggestions = [];
@@ -110,6 +122,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                             icon: const Icon(Icons.clear),
                             onPressed: () {
                               _controller.clear();
+                              _lastQuery = null;
                               setState(() {
                                 _suggestions = [];
                                 _error = null;

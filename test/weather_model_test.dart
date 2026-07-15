@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:skypulse/models/weather_model.dart';
+import 'package:skypulse/services/weather_exception.dart';
 
 void main() {
   group('Weather Model Tests', () {
@@ -86,6 +87,69 @@ void main() {
       expect(weather.temperature, 20.5);
       expect(weather.feelsLike, 19.5);
       expect(weather.description, 'clear sky');
+    });
+
+    // A 200 does not guarantee a well-formed body. A missing or wrong-typed
+    // required field must become a MalformedResponseException, never a raw
+    // TypeError or RangeError escaping to the UI.
+    group('fromJson tolerates and rejects', () {
+      Map<String, dynamic> validBody() => {
+        'weather': [
+          {'description': 'clear sky', 'icon': '01d'},
+        ],
+        'main': {
+          'temp': 20.5,
+          'feels_like': 19.5,
+          'temp_min': 18.0,
+          'temp_max': 22.0,
+          'humidity': 60,
+        },
+        'wind': {'speed': 3.5},
+        'dt': 1638360000,
+        'name': 'Paris',
+      };
+
+      test('a missing "main" object throws MalformedResponseException', () {
+        final json = validBody()..remove('main');
+        expect(
+          () => Weather.fromJson(json),
+          throwsA(isA<MalformedResponseException>()),
+        );
+      });
+
+      test('a missing "dt" throws MalformedResponseException', () {
+        final json = validBody()..remove('dt');
+        expect(
+          () => Weather.fromJson(json),
+          throwsA(isA<MalformedResponseException>()),
+        );
+      });
+
+      test('humidity returned as a double is accepted and rounded', () {
+        final json = validBody();
+        (json['main'] as Map)['humidity'] = 59.6;
+        expect(Weather.fromJson(json).humidity, 60);
+      });
+
+      test('an omitted "wind" (dead calm) yields a zero wind speed', () {
+        final json = validBody()..remove('wind');
+        expect(Weather.fromJson(json).windSpeed, 0);
+      });
+
+      test('an empty "weather" array does not crash', () {
+        final json = validBody();
+        json['weather'] = [];
+        final weather = Weather.fromJson(json);
+        expect(weather.description, '');
+        expect(weather.iconCode, '');
+      });
+
+      test('an absent "sys" leaves sunrise and sunset at zero', () {
+        final json = validBody()..remove('sys');
+        final weather = Weather.fromJson(json);
+        expect(weather.sunrise, 0);
+        expect(weather.sunset, 0);
+      });
     });
   });
 }

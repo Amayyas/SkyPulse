@@ -5,7 +5,13 @@ import 'package:skypulse/models/city_suggestion.dart';
 import 'package:skypulse/services/location_service.dart';
 import 'package:skypulse/services/weather_service.dart';
 
-final weatherServiceProvider = Provider((ref) => WeatherService());
+final weatherServiceProvider = Provider((ref) {
+  final service = WeatherService();
+  // One shared client for the whole app, closed with the provider — rather than
+  // a fresh one leaked per screen that constructs its own service.
+  ref.onDispose(service.dispose);
+  return service;
+});
 final locationServiceProvider = Provider((ref) => LocationService());
 
 final currentLocationProvider = FutureProvider<Position>((ref) async {

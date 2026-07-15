@@ -13,6 +13,9 @@ class WeatherService {
 
   static const Duration _timeout = Duration(seconds: 10);
 
+  /// Closes the underlying HTTP client. Call from the provider's `onDispose`.
+  void dispose() => client.close();
+
   /// Construit une requête HTTPS dont les paramètres sont percent-encodés.
   ///
   /// Ne jamais assembler une URL par interpolation de chaîne : un nom de ville
