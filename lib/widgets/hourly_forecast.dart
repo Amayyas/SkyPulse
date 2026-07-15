@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:skypulse/models/weather_model.dart';
+import 'package:skypulse/providers/unit_provider.dart';
+import 'package:skypulse/utils/unit_utils.dart';
 import 'package:skypulse/widgets/weather_icon.dart';
 
-class HourlyForecast extends StatelessWidget {
+class HourlyForecast extends ConsumerWidget {
   final List<Weather> forecast;
 
   const HourlyForecast({super.key, required this.forecast});
 
   @override
-  Widget build(BuildContext context) {
-    // Afficher les prochaines 24 heures
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unit = ref.watch(unitProvider);
     final next24Hours = forecast.take(24).toList();
 
     return Column(
@@ -53,7 +56,10 @@ class HourlyForecast extends StatelessWidget {
                           WeatherIcon(iconCode: weather.iconCode, size: 40),
                           const SizedBox(height: 4),
                           Text(
-                            '${weather.temperature.round()}°',
+                            UnitConverter.formatTempRounded(
+                              weather.temperature,
+                              unit,
+                            ),
                             style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
