@@ -4,6 +4,7 @@ import 'package:skypulse/utils/unit_utils.dart';
 
 class UnitNotifier extends Notifier<UnitSystem> {
   static const String _prefKey = 'unit_system';
+  bool _initialized = false;
 
   @override
   UnitSystem build() {
@@ -12,11 +13,14 @@ class UnitNotifier extends Notifier<UnitSystem> {
   }
 
   Future<void> _loadPreferences() async {
+    if (_initialized) return;
+
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString(_prefKey);
     if (saved == 'imperial') {
       state = UnitSystem.imperial;
     }
+    _initialized = true;
   }
 
   Future<void> toggle() async {
