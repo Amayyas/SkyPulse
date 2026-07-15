@@ -78,6 +78,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       // impossible à distinguer d'une ville qui n'existe pas — ou d'une appli
       // cassée. On dit ce qui s'est passé.
       if (!mounted) return;
+      // Clear the cache so retyping the same query retries it — otherwise the
+      // `query != _lastQuery` guard in _onSearchChanged would suppress it, and
+      // only the Retry button would work.
+      _lastQuery = null;
       setState(() {
         _error = e;
         _suggestions = [];
