@@ -1,38 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:skypulse/models/weather_model.dart';
+import 'package:skypulse/providers/unit_provider.dart';
+import 'package:skypulse/utils/unit_utils.dart';
 import 'package:skypulse/widgets/weather_icon.dart';
 
-class DailyForecast extends StatelessWidget {
+class DailyForecast extends ConsumerWidget {
   final List<Weather> forecast;
 
   const DailyForecast({super.key, required this.forecast});
 
   @override
-  Widget build(BuildContext context) {
-    // Regrouper les prévisions par jour unique
-    final Map<String, List<Weather>> forecastByDay = {};
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unit = ref.watch(unitProvider);
 
+    final Map<String, List<Weather>> forecastByDay = {};
     for (var weather in forecast) {
       final dayKey = DateFormat('yyyy-MM-dd').format(weather.date);
-      if (!forecastByDay.containsKey(dayKey)) {
-        forecastByDay[dayKey] = [];
-      }
-      forecastByDay[dayKey]!.add(weather);
+      forecastByDay.putIfAbsent(dayKey, () => []).add(weather);
     }
 
-    // Créer une prévision par jour avec min/max des températures
     final dailyForecast = <Weather>[];
-
     forecastByDay.forEach((day, weatherList) {
       if (weatherList.isNotEmpty) {
-        // Calculer les températures min et max du jour
         final temps = weatherList.map((w) => w.temperature).toList();
         final tempMin = temps.reduce((a, b) => a < b ? a : b);
         final tempMax = temps.reduce((a, b) => a > b ? a : b);
 
-        // Prendre la prévision du milieu de journée (vers 12h-14h) pour l'icône
         final middayWeather = weatherList.firstWhere(
           (w) => w.date.hour >= 12 && w.date.hour <= 14,
           orElse: () => weatherList.first,
@@ -57,7 +53,6 @@ class DailyForecast extends StatelessWidget {
       }
     });
 
-    // Limiter à 7 jours
     final limitedForecast = dailyForecast.take(7).toList();
 
     return Column(
@@ -106,7 +101,7 @@ class DailyForecast extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        '${weather.tempMax.round()}° / ${weather.tempMin.round()}°',
+                        '${UnitConverter.formatTempRounded(weather.tempMax, unit)} / ${UnitConverter.formatTempRounded(weather.tempMin, unit)}',
                         style: Theme.of(context).textTheme.bodyLarge,
                         textAlign: TextAlign.right,
                       ),

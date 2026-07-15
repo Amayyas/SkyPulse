@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skypulse/providers/weather_provider.dart';
 import 'package:skypulse/screens/search_screen.dart';
+import 'package:skypulse/screens/settings_screen.dart';
 import 'package:skypulse/widgets/current_weather.dart';
 import 'package:skypulse/widgets/daily_forecast.dart';
 import 'package:skypulse/widgets/error_view.dart';
@@ -30,6 +31,16 @@ class HomeScreen extends ConsumerWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const SearchScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'Paramètres',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
               );
             },
           ),

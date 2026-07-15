@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:skypulse/models/weather_model.dart';
-import 'package:skypulse/widgets/weather_icon.dart';
+import 'package:skypulse/providers/unit_provider.dart';
 import 'package:skypulse/utils/constants.dart';
 import 'package:skypulse/utils/unit_utils.dart';
+import 'package:skypulse/widgets/weather_icon.dart';
 
-class CurrentWeather extends StatelessWidget {
+class CurrentWeather extends ConsumerWidget {
   final Weather weather;
 
   const CurrentWeather({super.key, required this.weather});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unit = ref.watch(unitProvider);
+
     return Column(
       children: [
         Text(
@@ -32,7 +36,7 @@ class CurrentWeather extends StatelessWidget {
           size: 100,
         ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
         Text(
-          '${weather.temperature.round()}°',
+          UnitConverter.formatTempRounded(weather.temperature, unit),
           style: Theme.of(
             context,
           ).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -56,13 +60,13 @@ class CurrentWeather extends StatelessWidget {
             _buildDetailItem(
               context,
               Icons.air,
-              formatWindSpeed(weather.windSpeed),
+              UnitConverter.formatWindSpeed(weather.windSpeed, unit),
               'Vent',
             ),
             _buildDetailItem(
               context,
               Icons.thermostat,
-              '${weather.feelsLike.round()}°',
+              UnitConverter.formatTempRounded(weather.feelsLike, unit),
               'Ressenti',
             ),
           ],
