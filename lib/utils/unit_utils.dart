@@ -1,8 +1,5 @@
 enum UnitSystem { metric, imperial }
 
-/// Convert wind speed from meters per second to kilometers per hour.
-double mpsToKmh(double mps) => mps * 3.6;
-
 class UnitConverter {
   /// Temperature
   static double celsiusToFahrenheit(double celsius) => (celsius * 9 / 5) + 32;
