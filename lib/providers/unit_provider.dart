@@ -2,16 +2,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/unit_utils.dart';
 
-final unitProvider = StateNotifierProvider<UnitProvider, UnitSystem>((ref) {
+final unitProvider = NotifierProvider<UnitProvider, UnitSystem>(() {
   return UnitProvider();
 });
 
-class UnitProvider extends StateNotifier<UnitSystem> {
+class UnitProvider extends Notifier<UnitSystem> {
   static const String _prefKey = 'unit_system';
-  bool _userChanged = false;  // ← KEY: tracks user action
+  bool _userChanged = false; // ← KEY: tracks user action
 
-  UnitProvider() : super(UnitSystem.metric) {
+  @override
+  UnitSystem build() {
     _loadPreferences();
+    return UnitSystem.metric;
   }
 
   Future<void> _loadPreferences() async {
@@ -23,16 +25,16 @@ class UnitProvider extends StateNotifier<UnitSystem> {
   }
 
   Future<void> setUnit(UnitSystem unit) async {
-    _userChanged = true;  // ✅ SET BEFORE ANY AWAIT - THIS IS THE KEY!
+    _userChanged = true; // ✅ SET BEFORE ANY AWAIT - THIS IS THE KEY!
     state = unit;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefKey, unit.name);
   }
 
   Future<void> toggle() async {
-    final newState = state == UnitSystem.metric 
-        ? UnitSystem.imperial 
+    final newState = state == UnitSystem.metric
+        ? UnitSystem.imperial
         : UnitSystem.metric;
-    await setUnit(newState);  // ✅ Reuse setUnit
+    await setUnit(newState); // ✅ Reuse setUnit
   }
 }
