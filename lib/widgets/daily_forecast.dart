@@ -28,7 +28,10 @@ class DailyForecast extends ConsumerWidget {
     final byDay = <String, List<Weather>>{};
     for (final weather in forecast) {
       final dayKey = DateFormat('yyyy-MM-dd').format(weather.date);
-      if (dayKey == todayKey) continue;
+      // Skip today and anything before it. Today's bucket is partial (wrong
+      // min/max), and a stray past-day entry would otherwise occupy one of the
+      // five slots. ISO keys compare chronologically.
+      if (dayKey.compareTo(todayKey) <= 0) continue;
       byDay.putIfAbsent(dayKey, () => []).add(weather);
     }
 
