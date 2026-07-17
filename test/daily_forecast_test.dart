@@ -62,6 +62,19 @@ void main() {
       expect(result.single.tempMax, 27);
     });
 
+    test('past-day entries are excluded, not just today', () {
+      final forecast = [
+        _entry(DateTime(2026, 7, 15, 12), 10), // two days ago
+        _entry(DateTime(2026, 7, 17, 12), 25), // today
+        _entry(DateTime(2026, 7, 18, 12), 22), // tomorrow
+      ];
+
+      final result = DailyForecast.summarizeByDay(forecast, now: now);
+
+      expect(result.length, 1);
+      expect(result.single.date.day, 18);
+    });
+
     test('a forecast that only covers today yields nothing', () {
       final forecast = [
         _entry(DateTime(2026, 7, 17, 16), 25),
