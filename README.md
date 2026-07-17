@@ -9,7 +9,7 @@ Une application météo moderne et intuitive développée avec Flutter, offrant 
 
 - 🌡️ **Météo en temps réel** : Affichage des conditions météorologiques actuelles avec température, humidité, vitesse du vent et ressenti
 - ⏰ **Prévisions horaires** : Prévisions détaillées heure par heure pour les prochaines 24 heures
-- 📅 **Prévisions sur 7 jours** : Aperçu hebdomadaire des conditions météorologiques
+- 📅 **Prévisions sur 5 jours** : Aperçu des conditions météorologiques pour les prochains jours (l'API gratuite couvre 5 jours)
 - 🎨 **Thème dynamique** : L'interface change de couleur selon l'heure de la journée (aube, matin, après-midi, soir, crépuscule, nuit)
 - 🇫🇷 **Interface en français** : Toutes les descriptions météo et dates sont traduites en français
 - 📍 **Géolocalisation** : Détection automatique de votre position
@@ -95,7 +95,7 @@ lib/
 └── widgets/                      # Composants réutilisables
     ├── current_weather.dart      # Widget météo actuelle
     ├── hourly_forecast.dart      # Widget prévisions horaires
-    ├── daily_forecast.dart       # Widget prévisions 7 jours
+    ├── daily_forecast.dart       # Widget prévisions 5 jours
     └── weather_icon.dart         # Widget icône météo animée
 ```
 
