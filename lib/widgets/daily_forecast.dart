@@ -12,48 +12,66 @@ class DailyForecast extends ConsumerWidget {
 
   const DailyForecast({super.key, required this.forecast});
 
+  /// The free OpenWeatherMap /forecast endpoint spans 5 days, so this never
+  /// yields more. The count is a hard ceiling, not a promise.
+  static const int _maxDays = 5;
+
+  /// Collapses the 3-hourly (interpolated hourly) forecast into one entry per
+  /// day, with that day's real min/max.
+  ///
+  /// Today is skipped: its bucket only holds the hours left in the day, so its
+  /// min/max would understate the real range — and the current conditions are
+  /// already shown by [CurrentWeather] above. [now] is injectable for tests.
+  static List<Weather> summarizeByDay(List<Weather> forecast, {DateTime? now}) {
+    final todayKey = DateFormat('yyyy-MM-dd').format(now ?? DateTime.now());
+
+    final byDay = <String, List<Weather>>{};
+    for (final weather in forecast) {
+      final dayKey = DateFormat('yyyy-MM-dd').format(weather.date);
+      if (dayKey == todayKey) continue;
+      byDay.putIfAbsent(dayKey, () => []).add(weather);
+    }
+
+    // Day keys are ISO 'yyyy-MM-dd', so lexical order is chronological order.
+    // Don't rely on the input being sorted.
+    final sortedKeys = byDay.keys.toList()..sort();
+
+    final days = <Weather>[];
+    for (final key in sortedKeys) {
+      final entries = byDay[key]!;
+      final temps = entries.map((w) => w.temperature);
+      final midday = entries.firstWhere(
+        (w) => w.date.hour >= 12 && w.date.hour <= 14,
+        orElse: () => entries.first,
+      );
+      days.add(
+        Weather(
+          cityName: midday.cityName,
+          temperature: midday.temperature,
+          feelsLike: midday.feelsLike,
+          tempMin: temps.reduce((a, b) => a < b ? a : b),
+          tempMax: temps.reduce((a, b) => a > b ? a : b),
+          description: midday.description,
+          iconCode: midday.iconCode,
+          humidity: midday.humidity,
+          windSpeed: midday.windSpeed,
+          date: midday.date,
+          sunrise: midday.sunrise,
+          sunset: midday.sunset,
+        ),
+      );
+    }
+
+    return days.take(_maxDays).toList();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final unit = ref.watch(unitProvider);
+    final limitedForecast = summarizeByDay(forecast);
 
-    final Map<String, List<Weather>> forecastByDay = {};
-    for (var weather in forecast) {
-      final dayKey = DateFormat('yyyy-MM-dd').format(weather.date);
-      forecastByDay.putIfAbsent(dayKey, () => []).add(weather);
-    }
-
-    final dailyForecast = <Weather>[];
-    forecastByDay.forEach((day, weatherList) {
-      if (weatherList.isNotEmpty) {
-        final temps = weatherList.map((w) => w.temperature).toList();
-        final tempMin = temps.reduce((a, b) => a < b ? a : b);
-        final tempMax = temps.reduce((a, b) => a > b ? a : b);
-
-        final middayWeather = weatherList.firstWhere(
-          (w) => w.date.hour >= 12 && w.date.hour <= 14,
-          orElse: () => weatherList.first,
-        );
-
-        dailyForecast.add(
-          Weather(
-            cityName: middayWeather.cityName,
-            temperature: middayWeather.temperature,
-            feelsLike: middayWeather.feelsLike,
-            tempMin: tempMin,
-            tempMax: tempMax,
-            description: middayWeather.description,
-            iconCode: middayWeather.iconCode,
-            humidity: middayWeather.humidity,
-            windSpeed: middayWeather.windSpeed,
-            date: middayWeather.date,
-            sunrise: middayWeather.sunrise,
-            sunset: middayWeather.sunset,
-          ),
-        );
-      }
-    });
-
-    final limitedForecast = dailyForecast.take(7).toList();
+    // Nothing to summarize (e.g. a forecast that only covers today).
+    if (limitedForecast.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,7 +79,8 @@ class DailyForecast extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            'Prévisions sur 7 jours',
+            // The real count, never a fixed number the data can't back up.
+            'Prévisions sur ${limitedForecast.length} jours',
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
