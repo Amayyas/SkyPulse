@@ -42,7 +42,7 @@ dependencies:
   intl: ^0.20.2
   shimmer: ^3.0.0
   flutter_animate: ^4.5.2
-  google_fonts: ^8.1.0
+  google_fonts: ^8.2.0
   shared_preferences: ^2.5.0
 
 dev_dependencies:
