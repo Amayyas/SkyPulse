@@ -1,9 +1,21 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skypulse/models/weather_model.dart';
 import 'package:skypulse/models/city_suggestion.dart';
 import 'package:skypulse/services/location_service.dart';
 import 'package:skypulse/services/weather_service.dart';
+
+/// Holds the SharedPreferences instance loaded once at startup in `main()` and
+/// injected via a ProviderScope override. Reading it is synchronous, which lets
+/// the selected city be restored during the first build — no async gap, so no
+/// flash of the GPS location before the saved city appears, and no restore race.
+final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
+  throw UnimplementedError(
+    'sharedPreferencesProvider must be overridden in main()',
+  );
+});
 
 final weatherServiceProvider = Provider((ref) {
   final service = WeatherService();
@@ -21,18 +33,33 @@ final currentLocationProvider = FutureProvider<Position>((ref) async {
 
 // Provider pour la ville sélectionnée (stocke l'objet CitySuggestion complet)
 class SelectedCityNotifier extends Notifier<CitySuggestion?> {
+  static const String _prefKey = 'selected_city';
+
   @override
   CitySuggestion? build() {
-    return null;
+    final raw = ref.read(sharedPreferencesProvider).getString(_prefKey);
+    if (raw == null) return null;
+    try {
+      return CitySuggestion.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      // A corrupt stored value shouldn't strand the user; fall back to GPS and
+      // clear it so it can't keep failing.
+      ref.read(sharedPreferencesProvider).remove(_prefKey);
+      return null;
+    }
   }
 
   void setCity(CitySuggestion? city) {
     state = city;
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (city == null) {
+      prefs.remove(_prefKey);
+    } else {
+      prefs.setString(_prefKey, jsonEncode(city.toJson()));
+    }
   }
 
-  void clearCity() {
-    state = null;
-  }
+  void clearCity() => setCity(null);
 }
 
 final selectedCityProvider =
