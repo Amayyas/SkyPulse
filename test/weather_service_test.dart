@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
@@ -83,6 +84,39 @@ void main() {
 
       expect(result, isEmpty);
       verifyNever(mockClient.get(any));
+    });
+
+    test('getForecast carries pop through interpolation', () async {
+      // Two real 3h slots; the interpolated hours between them carry the
+      // leading slot's pop, the way they already carry its icon.
+      Map<String, dynamic> slot(int dt, double pop) => {
+        'dt': dt,
+        'main': {
+          'temp': 20.0,
+          'feels_like': 20.0,
+          'temp_min': 20.0,
+          'temp_max': 20.0,
+          'humidity': 50,
+        },
+        'weather': [
+          {'description': 'rain', 'icon': '10d'},
+        ],
+        'wind': {'speed': 3.0},
+        'pop': pop,
+      };
+      final body =
+          '{"list": [${jsonEncode(slot(1638360000, 0.4))}, '
+          '${jsonEncode(slot(1638370800, 0.9))}]}';
+
+      when(
+        mockClient.get(any),
+      ).thenAnswer((_) async => http.Response(body, 200));
+
+      final forecast = await weatherService.getForecast(48.8566, 2.3522);
+
+      expect(forecast.first.pop, 0.4);
+      // The interpolated hours after the first slot keep its pop.
+      expect(forecast[1].pop, 0.4);
     });
 
     // The service used to answer every failure with fabricated demo weather.

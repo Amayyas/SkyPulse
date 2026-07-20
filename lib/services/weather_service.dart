@@ -171,6 +171,7 @@ class WeatherService {
             date: interpolatedDate,
             sunrise: current.sunrise,
             sunset: current.sunset,
+            pop: current.pop, // carried from the 3h slot, like the icon
           ),
         );
       }
