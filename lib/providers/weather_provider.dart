@@ -78,23 +78,9 @@ final currentWeatherProvider = FutureProvider<Weather>((ref) async {
       selectedCity.lat,
       selectedCity.lon,
     );
-    // FORCER le nom de la ville avec celui qu'on a cherché, pas celui de l'API météo
-    return Weather(
-      cityName: selectedCity.name,
-      temperature: weather.temperature,
-      feelsLike: weather.feelsLike,
-      tempMin: weather.tempMin,
-      tempMax: weather.tempMax,
-      description: weather.description,
-      iconCode: weather.iconCode,
-      humidity: weather.humidity,
-      windSpeed: weather.windSpeed,
-      date: weather.date,
-      sunrise: weather.sunrise,
-      sunset: weather.sunset,
-      lat: weather.lat,
-      lon: weather.lon,
-    );
+    // FORCER le nom de la ville avec celui qu'on a cherché, pas celui de l'API
+    // météo (deux villes peuvent partager des coordonnées).
+    return weather.copyWith(cityName: selectedCity.name);
   }
 
   // Par défaut, utiliser la position GPS

@@ -22,6 +22,13 @@ class Weather {
   /// have to pass it.
   final double pop;
 
+  /// Atmospheric pressure in hPa, wind direction in degrees, and visibility in
+  /// metres. Nullable: not every response carries them, and the UI only shows
+  /// what is actually present rather than inventing a 0.
+  final int? pressure;
+  final int? windDeg;
+  final int? visibility;
+
   Weather({
     required this.cityName,
     required this.temperature,
@@ -38,7 +45,36 @@ class Weather {
     this.lat,
     this.lon,
     this.pop = 0,
+    this.pressure,
+    this.windDeg,
+    this.visibility,
   });
+
+  /// Returns a copy with the given fields replaced. Used to override the city
+  /// name without re-listing every field by hand — and without silently
+  /// dropping the ones a caller forgets.
+  Weather copyWith({String? cityName}) {
+    return Weather(
+      cityName: cityName ?? this.cityName,
+      temperature: temperature,
+      feelsLike: feelsLike,
+      tempMin: tempMin,
+      tempMax: tempMax,
+      description: description,
+      iconCode: iconCode,
+      humidity: humidity,
+      windSpeed: windSpeed,
+      date: date,
+      sunrise: sunrise,
+      sunset: sunset,
+      lat: lat,
+      lon: lon,
+      pop: pop,
+      pressure: pressure,
+      windDeg: windDeg,
+      visibility: visibility,
+    );
+  }
 
   factory Weather.fromJson(Map<String, dynamic> json) {
     final sys = json['sys'];
@@ -57,6 +93,9 @@ class Weather {
       sunset: _epoch(sys, 'sunset'),
       lat: _coord(json['coord'], 'lat'),
       lon: _coord(json['coord'], 'lon'),
+      pressure: _optionalInt(json['main'], 'pressure'),
+      windDeg: _optionalInt(json['wind'], 'deg'),
+      visibility: _optionalInt(json, 'visibility'),
     );
   }
 
@@ -76,6 +115,9 @@ class Weather {
       sunrise: 0,
       sunset: 0,
       pop: _optionalNum(json, 'pop'),
+      pressure: _optionalInt(json['main'], 'pressure'),
+      windDeg: _optionalInt(json['wind'], 'deg'),
+      visibility: _optionalInt(json, 'visibility'),
     );
   }
 
@@ -97,6 +139,15 @@ class Weather {
       return (object[key] as num).toDouble();
     }
     return 0;
+  }
+
+  /// Optional integer field, null when absent — so the UI can show it only when
+  /// the response actually carried it (pressure, wind direction, visibility).
+  static int? _optionalInt(dynamic object, String key) {
+    if (object is Map && object[key] is num) {
+      return (object[key] as num).round();
+    }
+    return null;
   }
 
   static Map<String, dynamic> _object(Map<String, dynamic> json, String key) {
