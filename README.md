@@ -11,7 +11,7 @@ Une application météo moderne et intuitive développée avec Flutter, offrant 
 - ⏰ **Prévisions horaires** : Prévisions détaillées heure par heure pour les prochaines 24 heures
 - 📅 **Prévisions sur 5 jours** : Aperçu des conditions météorologiques pour les prochains jours (l'API gratuite couvre 5 jours)
 - 🎨 **Thème dynamique** : L'interface change de couleur selon l'heure de la journée (aube, matin, après-midi, soir, crépuscule, nuit)
-- 🇫🇷 **Interface en français** : Toutes les descriptions météo et dates sont traduites en français
+- 🌍 **Bilingue (anglais/français)** : L'interface suit la langue de l'appareil, anglais par défaut ; les dates et le format des unités s'adaptent à la locale
 - 📍 **Géolocalisation** : Détection automatique de votre position
 - 🔍 **Recherche de villes** : Recherchez la météo de n'importe quelle ville avec autocomplétion
 - ✨ **Animations fluides** : Interface animée et agréable à utiliser

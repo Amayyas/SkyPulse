@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skypulse/providers/weather_provider.dart';
 import 'package:skypulse/services/weather_service.dart';
+import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/models/city_suggestion.dart';
 import 'package:skypulse/widgets/error_view.dart';
 import 'dart:async';
@@ -97,8 +98,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Rechercher une ville')),
+      appBar: AppBar(title: Text(l10n.searchCityTitle)),
       body: Column(
         children: [
           Padding(
@@ -108,7 +110,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 TextField(
                   controller: _controller,
                   decoration: InputDecoration(
-                    hintText: 'Entrez le nom de la ville',
+                    hintText: l10n.searchCityHint,
                     prefixIcon: const Icon(Icons.search),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -149,7 +151,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.my_location),
-                  label: const Text('Utiliser ma position actuelle'),
+                  label: Text(l10n.useCurrentLocation),
                 ),
               ],
             ),
@@ -198,7 +200,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         child: Padding(
           padding: const EdgeInsets.all(32.0),
           child: Text(
-            'Aucune ville ne correspond à « ${_controller.text} »',
+            AppLocalizations.of(context).noCityFound(_controller.text),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyLarge,
           ),

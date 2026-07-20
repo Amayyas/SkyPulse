@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/models/weather_model.dart';
 import 'package:skypulse/widgets/hourly_forecast.dart';
 
@@ -22,12 +23,18 @@ Weather _hour(DateTime date, double pop) => Weather(
 );
 
 void main() {
-  setUpAll(() => initializeDateFormatting('fr_FR', null));
+  setUpAll(() async {
+    await initializeDateFormatting('fr');
+    await initializeDateFormatting('en');
+  });
 
   Future<void> pump(WidgetTester tester, List<Weather> forecast) async {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
+          locale: const Locale('fr'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: Scaffold(body: HourlyForecast(forecast: forecast)),
         ),
       ),

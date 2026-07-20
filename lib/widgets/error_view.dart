@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart'
     hide LocationServiceDisabledException;
+import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/services/location_exception.dart';
 import 'package:skypulse/services/weather_exception.dart';
 
@@ -18,7 +19,7 @@ class ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final info = _describe(error);
+    final info = _describe(error, AppLocalizations.of(context));
 
     // Scrollable : sans ça, le RefreshIndicator qui enveloppe cet écran n'a
     // rien à quoi s'accrocher, et le geste « tirer pour réessayer » ne fait
@@ -64,18 +65,18 @@ class ErrorView extends StatelessWidget {
                     ElevatedButton.icon(
                       onPressed: Geolocator.openAppSettings,
                       icon: const Icon(Icons.settings),
-                      label: const Text('Ouvrir les réglages'),
+                      label: Text(AppLocalizations.of(context).openSettings),
                     ),
                     const SizedBox(height: 8),
                     TextButton(
                       onPressed: onRetry,
-                      child: const Text('Réessayer'),
+                      child: Text(AppLocalizations.of(context).retry),
                     ),
                   ] else
                     ElevatedButton.icon(
                       onPressed: onRetry,
                       icon: const Icon(Icons.refresh),
-                      label: const Text('Réessayer'),
+                      label: Text(AppLocalizations.of(context).retry),
                     ),
                 ],
               ),
@@ -86,77 +87,74 @@ class ErrorView extends StatelessWidget {
     );
   }
 
-  /// Traduit une erreur en icône, message, conseil et action.
+  /// Maps an error to an icon, message, hint and action.
   ///
-  /// Le message technique de l'exception n'est jamais montré : il part dans les
-  /// logs et les tests, pas à l'écran.
-  static _ErrorInfo _describe(Object error) {
+  /// The technical message of the exception is never shown — it goes to logs
+  /// and tests, not the screen.
+  static _ErrorInfo _describe(Object error, AppLocalizations l10n) {
     return switch (error) {
-      MissingApiKeyException() => const _ErrorInfo(
+      MissingApiKeyException() => _ErrorInfo(
         Icons.vpn_key_off,
-        'Clé API non configurée',
-        "Aucune clé OpenWeatherMap n'a été fournie au build. Lancez avec "
-            "--dart-define=OWM_API_KEY=votre_clé (voir le README).",
+        l10n.errApiKeyMissingTitle,
+        l10n.errApiKeyMissingHint,
       ),
-      InvalidApiKeyException() => const _ErrorInfo(
+      InvalidApiKeyException() => _ErrorInfo(
         Icons.key_off,
-        'Clé API invalide',
-        "La clé OpenWeatherMap est refusée. Une clé fraîchement créée peut "
-            "mettre jusqu'à deux heures à s'activer.",
+        l10n.errApiKeyInvalidTitle,
+        l10n.errApiKeyInvalidHint,
       ),
       CityNotFoundException(cityName: final city) => _ErrorInfo(
         Icons.location_off,
-        city.isEmpty ? 'Ville introuvable' : 'Ville introuvable : $city',
-        'Vérifiez l\'orthographe, ou essayez une ville plus grande à proximité.',
+        city.isEmpty
+            ? l10n.errCityNotFoundTitle
+            : l10n.errCityNotFoundTitleNamed(city),
+        l10n.errCityNotFoundHint,
       ),
-      RateLimitException() => const _ErrorInfo(
+      RateLimitException() => _ErrorInfo(
         Icons.hourglass_empty,
-        'Trop de requêtes',
-        'Le quota gratuit est dépassé. Réessayez dans une minute.',
+        l10n.errRateLimitTitle,
+        l10n.errRateLimitHint,
       ),
-      NoConnectionException() => const _ErrorInfo(
+      NoConnectionException() => _ErrorInfo(
         Icons.wifi_off,
-        'Pas de connexion',
-        'Impossible de joindre le service météo. Vérifiez votre réseau.',
+        l10n.errNoConnectionTitle,
+        l10n.errNoConnectionHint,
       ),
       WeatherApiException(statusCode: final code) => _ErrorInfo(
         Icons.cloud_off,
-        'Service météo indisponible',
-        'Le serveur a répondu une erreur $code. Ce n\'est pas de votre fait.',
+        l10n.errServiceTitle,
+        l10n.errServiceHint(code),
       ),
-      MalformedResponseException() => const _ErrorInfo(
+      MalformedResponseException() => _ErrorInfo(
         Icons.error_outline,
-        'Réponse inattendue',
-        'Le service météo a renvoyé des données incompréhensibles.',
+        l10n.errMalformedTitle,
+        l10n.errMalformedHint,
       ),
-      LocationServiceDisabledException() => const _ErrorInfo(
+      LocationServiceDisabledException() => _ErrorInfo(
         Icons.location_disabled,
-        'Localisation désactivée',
-        'Activez la localisation dans les réglages de l\'appareil, ou '
-            'recherchez une ville.',
+        l10n.errLocationDisabledTitle,
+        l10n.errLocationDisabledHint,
       ),
-      LocationPermissionDeniedException() => const _ErrorInfo(
+      LocationPermissionDeniedException() => _ErrorInfo(
         Icons.location_off,
-        'Localisation refusée',
-        'Autorisez l\'accès à votre position, ou recherchez une ville.',
+        l10n.errLocationDeniedTitle,
+        l10n.errLocationDeniedHint,
       ),
-      LocationPermissionPermanentlyDeniedException() => const _ErrorInfo(
+      LocationPermissionPermanentlyDeniedException() => _ErrorInfo(
         Icons.location_off,
-        'Localisation bloquée',
-        'L\'accès à la position est refusé définitivement. Ouvrez les réglages '
-            'pour l\'autoriser.',
+        l10n.errLocationBlockedTitle,
+        l10n.errLocationBlockedHint,
         showOpenSettings: true,
       ),
-      LocationTimeoutException() => const _ErrorInfo(
+      LocationTimeoutException() => _ErrorInfo(
         Icons.location_searching,
-        'Position introuvable',
-        'Impossible d\'obtenir votre position à temps. Réessayez, ou '
-            'recherchez une ville.',
+        l10n.errLocationTimeoutTitle,
+        l10n.errLocationTimeoutHint,
       ),
-      _ => const _ErrorInfo(
+      _ => _ErrorInfo(
         Icons.error_outline,
-        'Une erreur est survenue',
-        'Réessayez dans un instant.',
+        l10n.errGenericTitle,
+        l10n.errGenericHint,
       ),
     };
   }

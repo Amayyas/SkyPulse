@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/models/weather_model.dart';
 import 'package:skypulse/providers/unit_provider.dart';
 import 'package:skypulse/utils/unit_utils.dart';
@@ -15,6 +16,7 @@ class HourlyForecast extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final unit = ref.watch(unitProvider);
+    final locale = Localizations.localeOf(context).languageCode;
     final next24Hours = forecast.take(24).toList();
 
     return Column(
@@ -23,7 +25,7 @@ class HourlyForecast extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            'Prévisions horaires',
+            AppLocalizations.of(context).hourlyForecast,
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -49,7 +51,7 @@ class HourlyForecast extends ConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            DateFormat('HH\'h\'', 'fr_FR').format(weather.date),
+                            DateFormat.j(locale).format(weather.date),
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           const SizedBox(height: 4),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skypulse/providers/theme_provider.dart';
 import 'package:skypulse/providers/weather_provider.dart';
@@ -10,7 +10,9 @@ import 'package:skypulse/utils/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('fr_FR', null);
+  // Both supported locales, so date formatting works whichever one wins.
+  await initializeDateFormatting('en');
+  await initializeDateFormatting('fr');
   // Loaded before the first frame so the saved city is available synchronously
   // when providers build — no flash of GPS before it appears.
   final prefs = await SharedPreferences.getInstance();
@@ -60,13 +62,10 @@ class _SkyPulseAppState extends ConsumerState<SkyPulseApp>
       title: 'SkyPulse',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeFor(bucket),
-      locale: const Locale('fr', 'FR'),
-      supportedLocales: const [Locale('fr', 'FR'), Locale('en', 'US')],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+      // No hardcoded locale: the app follows the device language, falling back
+      // to the first supported locale (English) when it isn't French.
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       home: const HomeScreen(),
     );
   }
