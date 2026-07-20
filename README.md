@@ -52,15 +52,18 @@ cd SkyPulse
 flutter pub get
 ```
 
-3. Configurez votre clé API OpenWeatherMap dans `lib/utils/constants.dart` :
-```dart
-static const String openWeatherMapApiKey = 'VOTRE_CLE_API_ICI';
-```
+3. Obtenez une clé API gratuite sur [OpenWeatherMap](https://openweathermap.org/api).
+   Elle se fournit **au lancement**, jamais dans un fichier suivi par git :
 
-4. Lancez l'application :
+4. Lancez l'application avec votre clé :
 ```bash
-flutter run
+flutter run --dart-define=OWM_API_KEY=votre_cle
 ```
+Sans clé, l'application démarre mais affiche « Clé API non configurée ».
+
+> 💡 Astuce : pour ne pas retaper la clé, mettez-la dans un fichier
+> `dart_define.json` (git-ignoré) et lancez
+> `flutter run --dart-define-from-file=dart_define.json`.
 
 ## 🎨 Thèmes dynamiques
 
@@ -139,11 +142,16 @@ Tests disponibles :
 
 1. Créez un compte gratuit sur [OpenWeatherMap](https://openweathermap.org/api)
 2. Accédez à votre dashboard et générez une clé API
-3. Copiez la clé dans `lib/utils/constants.dart` :
+3. Fournissez-la au build via `--dart-define` :
 
-```dart
-static const String openWeatherMapApiKey = 'VOTRE_CLE_API_ICI';
+```bash
+flutter run   --dart-define=OWM_API_KEY=votre_cle
+flutter build apk --dart-define=OWM_API_KEY=votre_cle
 ```
+
+⚠️ **Ne mettez jamais votre clé dans un fichier suivi par git.** Elle est lue
+depuis l'environnement du build (`String.fromEnvironment`), donc aucun fichier
+source n'a besoin d'être modifié.
 
 ### Endpoints API utilisés
 

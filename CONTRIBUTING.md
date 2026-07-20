@@ -40,24 +40,24 @@ and again whenever you change a `@GenerateMocks` annotation.
 SkyPulse reads live data from [OpenWeatherMap](https://openweathermap.org/api).
 Create a free account and generate a key.
 
-Right now, the only way to supply it is to edit the constant in
-[`lib/utils/constants.dart`](lib/utils/constants.dart):
+Supply it at build time with `--dart-define` — **never** by editing a tracked
+file:
 
-```dart
-static const String openWeatherMapApiKey = 'YOUR_API_KEY_HERE';
+```bash
+flutter run --dart-define=OWM_API_KEY=your_key
 ```
 
-> [!WARNING]
-> **That file is tracked by git.** Editing it means you are one `git add -A`
-> away from publishing your key to a public repository. Before every commit,
-> check that your key is not in the diff.
+The constant in [`lib/utils/constants.dart`](lib/utils/constants.dart) reads
+`String.fromEnvironment('OWM_API_KEY')`, so no source file has to change and
+your key can never end up in a commit. Without a key the app runs but shows a
+"Clé API non configurée" screen.
+
+> [!TIP]
+> To avoid retyping it, put the key in a git-ignored `dart_define.json` and use
+> `flutter run --dart-define-from-file=dart_define.json`.
 >
-> This is a bad design and we know it — it is tracked in
-> [#26](https://github.com/Amayyas/SkyPulse/issues/26), which will move the key
-> to `--dart-define` so that no tracked file ever has to change. **Until that
-> lands, `--dart-define` does nothing**: there is no `String.fromEnvironment` in
-> the codebase, so the flag is silently ignored and the placeholder key is used
-> regardless.
+> A client-side key is still extractable from a shipped binary — `--dart-define`
+> keeps it out of git, not out of the app. See [SECURITY.md](SECURITY.md).
 
 Also be aware of [#1](https://github.com/Amayyas/SkyPulse/issues/1): when the
 API rejects a request, the app currently falls back to **fabricated demo

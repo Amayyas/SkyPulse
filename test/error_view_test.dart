@@ -28,6 +28,15 @@ void main() {
       expect(find.textContaining('deux heures'), findsOneWidget);
     });
 
+    testWidgets('a missing API key points at the build configuration', (
+      tester,
+    ) async {
+      await pump(tester, const MissingApiKeyException());
+
+      expect(find.text('Clé API non configurée'), findsOneWidget);
+      expect(find.textContaining('dart-define'), findsOneWidget);
+    });
+
     testWidgets('an unknown city names the city that was searched for', (
       tester,
     ) async {

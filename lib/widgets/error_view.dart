@@ -92,11 +92,17 @@ class ErrorView extends StatelessWidget {
   /// logs et les tests, pas à l'écran.
   static _ErrorInfo _describe(Object error) {
     return switch (error) {
+      MissingApiKeyException() => const _ErrorInfo(
+        Icons.vpn_key_off,
+        'Clé API non configurée',
+        "Aucune clé OpenWeatherMap n'a été fournie au build. Lancez avec "
+            "--dart-define=OWM_API_KEY=votre_clé (voir le README).",
+      ),
       InvalidApiKeyException() => const _ErrorInfo(
         Icons.key_off,
         'Clé API invalide',
-        "La clé OpenWeatherMap est absente ou refusée. Une clé fraîchement "
-            "créée peut mettre jusqu'à deux heures à s'activer.",
+        "La clé OpenWeatherMap est refusée. Une clé fraîchement créée peut "
+            "mettre jusqu'à deux heures à s'activer.",
       ),
       CityNotFoundException(cityName: final city) => _ErrorInfo(
         Icons.location_off,

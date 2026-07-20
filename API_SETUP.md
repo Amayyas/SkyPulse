@@ -1,51 +1,48 @@
 # Configuration de l'API OpenWeatherMap
 
-## Étapes de configuration
+## 1. Obtenez une clé gratuite
 
-1. **Obtenez votre clé API gratuite**
-   - Rendez-vous sur [OpenWeatherMap](https://openweathermap.org/api)
-   - Créez un compte gratuit
-   - Accédez à votre dashboard et copiez votre clé API
+- Rendez-vous sur [OpenWeatherMap](https://openweathermap.org/api)
+- Créez un compte gratuit
+- Copiez votre clé API depuis le dashboard
 
-2. **Configurez la clé dans le projet**
-   
-   Ouvrez le fichier `lib/utils/constants.dart` et remplacez `YOUR_API_KEY_HERE` par votre clé :
-   
-   ```dart
-   static const String openWeatherMapApiKey = 'VOTRE_CLE_API_ICI';
-   ```
+> Une clé fraîchement créée peut mettre jusqu'à deux heures à s'activer.
 
-3. **Lancez l'application**
-   ```bash
-   flutter pub get
-   flutter run
-   ```
+## 2. Fournissez la clé au build
+
+La clé se passe **au lancement**, via `--dart-define`. Elle n'est jamais écrite
+dans un fichier suivi par git : `lib/utils/constants.dart` la lit depuis
+l'environnement du build (`String.fromEnvironment('OWM_API_KEY')`).
+
+```bash
+flutter run              --dart-define=OWM_API_KEY=votre_cle
+flutter build apk        --dart-define=OWM_API_KEY=votre_cle
+flutter build web        --dart-define=OWM_API_KEY=votre_cle
+```
+
+Sans clé, l'application démarre mais affiche **« Clé API non configurée »**
+plutôt que de partir en requête vouée à échouer.
+
+### Astuce : éviter de retaper la clé
+
+Mettez-la dans un fichier `dart_define.json` (à git-ignorer), puis :
+
+```json
+{ "OWM_API_KEY": "votre_cle" }
+```
+
+```bash
+flutter run --dart-define-from-file=dart_define.json
+```
 
 ## Sécurité
 
-⚠️ **Important** : Ne commitez jamais votre clé API dans un dépôt public !
+`--dart-define` garde la clé **hors de git**. Il ne la garde pas hors du
+binaire : une clé embarquée dans une application cliente reste extractible d'un
+build distribué. La clé du palier gratuit a une valeur négligeable et ne donne
+accès qu'à des données météo publiques — le compromis est assumé. Voir
+[SECURITY.md](SECURITY.md).
 
-Si vous avez accidentellement commité votre clé :
-1. Régénérez une nouvelle clé sur OpenWeatherMap
-2. Utilisez `git filter-branch` ou BFG Repo-Cleaner pour nettoyer l'historique
-
-## Alternative : Variables d'environnement
-
-Pour plus de sécurité, vous pouvez utiliser des variables d'environnement :
-
-1. Créez un fichier `.env` à la racine du projet :
-   ```
-   OPENWEATHERMAP_API_KEY=votre_cle_ici
-   ```
-
-2. Ajoutez `.env` au `.gitignore` (déjà fait)
-
-3. Décommentez la ligne dans `main.dart` :
-   ```dart
-   await dotenv.load(fileName: ".env");
-   ```
-
-4. Modifiez `constants.dart` pour utiliser :
-   ```dart
-   static final String openWeatherMapApiKey = dotenv.env['OPENWEATHERMAP_API_KEY'] ?? '';
-   ```
+Si vous avez malgré tout commité une clé : régénérez-la sur OpenWeatherMap (la
+révocation est immédiate), puis nettoyez l'historique si nécessaire
+(`git filter-repo`, ou BFG Repo-Cleaner).

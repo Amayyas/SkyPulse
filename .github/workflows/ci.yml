@@ -98,9 +98,9 @@ jobs:
       - name: Generate code
         run: dart run build_runner build --delete-conflicting-outputs
 
-      # The API key is still a placeholder constant in lib/utils/constants.dart,
-      # so no secret is needed to build. Once #26 lands and the key moves to
-      # String.fromEnvironment, add:
-      #   --dart-define=OWM_API_KEY=${{ secrets.OWM_API_KEY }}
+      # The key comes from --dart-define (lib/utils/constants.dart reads
+      # String.fromEnvironment). Building does not require a real key — an empty
+      # value compiles fine — so an unset OWM_API_KEY secret is not a problem
+      # here; it only matters for a release build that must actually run.
       - name: Build
-        run: ${{ matrix.command }}
+        run: ${{ matrix.command }} --dart-define=OWM_API_KEY=${{ secrets.OWM_API_KEY }}

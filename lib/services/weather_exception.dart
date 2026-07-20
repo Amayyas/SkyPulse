@@ -15,10 +15,20 @@ sealed class WeatherException implements Exception {
   String toString() => '$runtimeType: $message';
 }
 
+/// Aucune clé n'a été fournie au build (`--dart-define=OWM_API_KEY=...`).
+///
+/// Distinct de [InvalidApiKeyException] : ici on n'appelle même pas l'API, la
+/// clé est vide. Le message pointe vers la configuration plutôt que vers un
+/// problème de compte.
+class MissingApiKeyException extends WeatherException {
+  const MissingApiKeyException()
+    : super('No API key was provided at build time');
+}
+
 /// L'API a rejeté la clé (HTTP 401).
 ///
-/// En pratique : la clé est absente, encore sur sa valeur d'exemple, ou vient
-/// d'être créée (OpenWeatherMap met jusqu'à deux heures à l'activer).
+/// En pratique : la clé est fausse, ou vient d'être créée (OpenWeatherMap met
+/// jusqu'à deux heures à l'activer).
 class InvalidApiKeyException extends WeatherException {
   const InvalidApiKeyException() : super('The API rejected the key (HTTP 401)');
 }

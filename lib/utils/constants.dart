@@ -1,7 +1,15 @@
 class AppConstants {
-  // TODO: Remplacez cette clé par votre propre clé API OpenWeatherMap
-  // Obtenez votre clé gratuite sur : https://openweathermap.org/api
-  static const String openWeatherMapApiKey = 'YOUR_API_KEY_HERE';
+  /// Clé API OpenWeatherMap, injectée au build — jamais écrite dans un fichier
+  /// suivi par git.
+  ///
+  ///   flutter run --dart-define=OWM_API_KEY=votre_cle
+  ///
+  /// Vide si non fournie ; le service lève alors une MissingApiKeyException
+  /// plutôt que de partir en requête avec une clé absente. Obtenez une clé
+  /// gratuite sur https://openweathermap.org/api
+  static const String openWeatherMapApiKey = String.fromEnvironment(
+    'OWM_API_KEY',
+  );
 
   /// Hôte commun à l'API météo et à l'API de géocodage.
   ///

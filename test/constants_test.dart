@@ -39,8 +39,11 @@ void main() {
       );
     });
 
-    test('API key is not empty', () {
-      expect(AppConstants.openWeatherMapApiKey, isNotEmpty);
+    test('API key comes from the environment (empty when unset)', () {
+      // Built from String.fromEnvironment('OWM_API_KEY'). With no --dart-define
+      // it is empty, which is exactly why WeatherService throws
+      // MissingApiKeyException rather than firing a doomed request.
+      expect(AppConstants.openWeatherMapApiKey, isA<String>());
     });
 
     test('API host carries no scheme, so it cannot smuggle in cleartext', () {
