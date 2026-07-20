@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/models/weather_model.dart';
 import 'package:skypulse/providers/unit_provider.dart';
 import 'package:skypulse/utils/unit_utils.dart';
@@ -71,6 +72,7 @@ class DailyForecast extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final unit = ref.watch(unitProvider);
+    final locale = Localizations.localeOf(context).languageCode;
     final limitedForecast = summarizeByDay(forecast);
 
     // Nothing to summarize (e.g. a forecast that only covers today).
@@ -83,7 +85,7 @@ class DailyForecast extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
             // The real count, never a fixed number the data can't back up.
-            'Prévisions sur ${limitedForecast.length} jours',
+            AppLocalizations.of(context).dailyForecast(limitedForecast.length),
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -105,7 +107,7 @@ class DailyForecast extends ConsumerWidget {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        DateFormat('EEEE', 'fr_FR').format(weather.date),
+                        DateFormat('EEEE', locale).format(weather.date),
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),

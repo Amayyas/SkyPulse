@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/services/location_exception.dart';
 import 'package:skypulse/services/weather_exception.dart';
 import 'package:skypulse/widgets/error_view.dart';
 
 /// The point of these tests is not that the wording is pretty. It is that a
 /// failure reaches the user as something they can act on, and that the raw
-/// exception text never does.
+/// exception text never does. Pinned to French so the assertions read against a
+/// stable set of strings.
 void main() {
   Future<void> pump(WidgetTester tester, Object error) {
     return tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('fr'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: Scaffold(
           body: ErrorView(error: error, onRetry: () {}),
         ),
@@ -106,6 +111,9 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          locale: const Locale('fr'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: Scaffold(
             body: ErrorView(
               error: const NoConnectionException('offline'),
@@ -117,6 +125,30 @@ void main() {
 
       await tester.tap(find.text('Réessayer'));
       expect(retried, 1);
+    });
+  });
+
+  // The same error renders in the active language: proof the localisation
+  // works in both directions, not just that the French strings survived.
+  group('ErrorView localisation', () {
+    testWidgets('renders English when the locale is en', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: Scaffold(
+            body: ErrorView(
+              error: const InvalidApiKeyException(),
+              onRetry: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Invalid API key'), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
+      expect(find.text('Clé API invalide'), findsNothing);
     });
   });
 

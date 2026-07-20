@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/providers/weather_provider.dart';
 import 'package:skypulse/screens/search_screen.dart';
 import 'package:skypulse/screens/settings_screen.dart';
@@ -14,6 +15,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final weatherAsync = ref.watch(currentWeatherProvider);
     final forecastAsync = ref.watch(forecastProvider);
 
@@ -21,8 +23,8 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: weatherAsync.when(
           data: (weather) => Text(weather.cityName),
-          loading: () => const Text('Chargement...'),
-          error: (_, _) => const Text('Erreur'),
+          loading: () => Text(l10n.loading),
+          error: (_, _) => Text(l10n.genericError),
         ),
         actions: [
           IconButton(
@@ -36,7 +38,7 @@ class HomeScreen extends ConsumerWidget {
           ),
           IconButton(
             icon: const Icon(Icons.settings),
-            tooltip: 'Paramètres',
+            tooltip: l10n.settings,
             onPressed: () {
               Navigator.push(
                 context,

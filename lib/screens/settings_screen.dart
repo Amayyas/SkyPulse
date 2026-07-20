@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/providers/unit_provider.dart';
 import 'package:skypulse/utils/unit_utils.dart';
 
@@ -9,31 +10,32 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final unit = ref.watch(unitProvider);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Paramètres')),
+      appBar: AppBar(title: Text(l10n.settings)),
       body: ListView(
         children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
             child: Text(
-              'Unités',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              l10n.settingsUnitsTitle,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
             child: SegmentedButton<UnitSystem>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: UnitSystem.metric,
-                  label: Text('Métrique (°C, km/h)'),
-                  icon: Icon(Icons.thermostat),
+                  label: Text(l10n.settingsMetricLabel),
+                  icon: const Icon(Icons.thermostat),
                 ),
                 ButtonSegment(
                   value: UnitSystem.imperial,
-                  label: Text('Impérial (°F, mph)'),
-                  icon: Icon(Icons.flag),
+                  label: Text(l10n.settingsImperialLabel),
+                  icon: const Icon(Icons.flag),
                 ),
               ],
               selected: {unit},
@@ -43,16 +45,16 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const Divider(height: 32),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: Text(
-              'Aperçu',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              l10n.settingsPreviewTitle,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
           ListTile(
             leading: const Icon(Icons.thermostat),
-            title: const Text('Température (25 °C)'),
+            title: Text(l10n.settingsTempPreview),
             trailing: Text(
               UnitConverter.formatTemperature(25, unit),
               style: Theme.of(context).textTheme.titleMedium,
@@ -60,7 +62,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.air),
-            title: const Text('Vent (5.14 m/s)'),
+            title: Text(l10n.settingsWindPreview),
             trailing: Text(
               UnitConverter.formatWindSpeed(5.14, unit),
               style: Theme.of(context).textTheme.titleMedium,

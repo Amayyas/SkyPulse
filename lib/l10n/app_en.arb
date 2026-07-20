@@ -1,0 +1,72 @@
+{
+  "@@locale": "en",
+
+  "loading": "Loading…",
+  "genericError": "Error",
+  "settings": "Settings",
+  "retry": "Retry",
+  "openSettings": "Open settings",
+
+  "searchCityTitle": "Search for a city",
+  "searchCityHint": "Enter a city name",
+  "useCurrentLocation": "Use my current location",
+  "noCityFound": "No city matches “{query}”",
+  "@noCityFound": {
+    "placeholders": { "query": { "type": "String" } }
+  },
+
+  "humidity": "Humidity",
+  "wind": "Wind",
+  "windWithDirection": "Wind {direction}",
+  "@windWithDirection": {
+    "placeholders": { "direction": { "type": "String" } }
+  },
+  "feelsLike": "Feels like",
+  "pressure": "Pressure",
+  "visibility": "Visibility",
+
+  "hourlyForecast": "Hourly forecast",
+  "dailyForecast": "{count}-day forecast",
+  "@dailyForecast": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "errApiKeyMissingTitle": "API key not configured",
+  "errApiKeyMissingHint": "No OpenWeatherMap key was provided at build time. Run with --dart-define=OWM_API_KEY=your_key (see the README).",
+  "errApiKeyInvalidTitle": "Invalid API key",
+  "errApiKeyInvalidHint": "The OpenWeatherMap key was refused. A freshly created key can take up to two hours to activate.",
+  "errCityNotFoundTitle": "City not found",
+  "errCityNotFoundTitleNamed": "City not found: {city}",
+  "@errCityNotFoundTitleNamed": {
+    "placeholders": { "city": { "type": "String" } }
+  },
+  "errCityNotFoundHint": "Check the spelling, or try a larger city nearby.",
+  "errRateLimitTitle": "Too many requests",
+  "errRateLimitHint": "The free quota is exhausted. Try again in a minute.",
+  "errNoConnectionTitle": "No connection",
+  "errNoConnectionHint": "Couldn’t reach the weather service. Check your network.",
+  "errServiceTitle": "Weather service unavailable",
+  "errServiceHint": "The server returned error {code}. This isn’t on your end.",
+  "@errServiceHint": {
+    "placeholders": { "code": { "type": "int" } }
+  },
+  "errMalformedTitle": "Unexpected response",
+  "errMalformedHint": "The weather service returned data that couldn’t be read.",
+  "errLocationDisabledTitle": "Location turned off",
+  "errLocationDisabledHint": "Turn location on in your device settings, or search for a city.",
+  "errLocationDeniedTitle": "Location denied",
+  "errLocationDeniedHint": "Allow access to your location, or search for a city.",
+  "errLocationBlockedTitle": "Location blocked",
+  "errLocationBlockedHint": "Location access is permanently denied. Open settings to allow it.",
+  "errLocationTimeoutTitle": "Location not found",
+  "errLocationTimeoutHint": "Couldn’t get your position in time. Try again, or search for a city.",
+  "errGenericTitle": "Something went wrong",
+  "errGenericHint": "Try again in a moment.",
+
+  "settingsUnitsTitle": "Units",
+  "settingsMetricLabel": "Metric (°C, km/h)",
+  "settingsImperialLabel": "Imperial (°F, mph)",
+  "settingsPreviewTitle": "Preview",
+  "settingsTempPreview": "Temperature (25 °C)",
+  "settingsWindPreview": "Wind (5.14 m/s)"
+}
