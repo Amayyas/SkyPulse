@@ -23,6 +23,14 @@ class CitySuggestion {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'country': country,
+    'state': state,
+    'lat': lat,
+    'lon': lon,
+  };
+
   String get displayName {
     if (state.isNotEmpty) {
       return '$name, $state, $country';
