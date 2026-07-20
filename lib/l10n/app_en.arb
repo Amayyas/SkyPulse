@@ -25,8 +25,17 @@
   "pressure": "Pressure",
   "visibility": "Visibility",
 
+  "compassN": "N",
+  "compassNE": "NE",
+  "compassE": "E",
+  "compassSE": "SE",
+  "compassS": "S",
+  "compassSW": "SW",
+  "compassW": "W",
+  "compassNW": "NW",
+
   "hourlyForecast": "Hourly forecast",
-  "dailyForecast": "{count}-day forecast",
+  "dailyForecast": "{count, plural, other{{count}-day forecast}}",
   "@dailyForecast": {
     "placeholders": { "count": { "type": "int" } }
   },

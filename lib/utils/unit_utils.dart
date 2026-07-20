@@ -51,9 +51,10 @@ class UnitConverter {
     return '${km.toStringAsFixed(1)} km';
   }
 
-  /// Wind direction in degrees to an 8-point French compass label.
-  static String windCardinal(int degrees) {
-    const points = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
-    return points[(((degrees % 360) / 45).round()) % 8];
+  /// Wind direction in degrees to an 8-point compass index (0 = N, 1 = NE, …,
+  /// 7 = NW). The label itself is localised by the caller — the abbreviations
+  /// differ by language (e.g. W vs O), so this stays language-agnostic.
+  static int windDirectionIndex(int degrees) {
+    return (((degrees % 360) / 45).round()) % 8;
   }
 }
