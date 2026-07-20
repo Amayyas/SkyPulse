@@ -51,5 +51,39 @@ void main() {
     test('formatTempRounded imperial', () {
       expect(UnitConverter.formatTempRounded(25, UnitSystem.imperial), '77°');
     });
+
+    test('formatPressure metric shows hPa', () {
+      expect(UnitConverter.formatPressure(1013, UnitSystem.metric), '1013 hPa');
+    });
+
+    test('formatPressure imperial converts to inHg', () {
+      expect(
+        UnitConverter.formatPressure(1013, UnitSystem.imperial),
+        '29.91 inHg',
+      );
+    });
+
+    test('formatVisibility metric shows km', () {
+      expect(
+        UnitConverter.formatVisibility(10000, UnitSystem.metric),
+        '10.0 km',
+      );
+    });
+
+    test('formatVisibility imperial converts to miles', () {
+      expect(
+        UnitConverter.formatVisibility(10000, UnitSystem.imperial),
+        '6.2 mi',
+      );
+    });
+
+    test('windCardinal maps degrees to an 8-point compass', () {
+      expect(UnitConverter.windCardinal(0), 'N');
+      expect(UnitConverter.windCardinal(90), 'E');
+      expect(UnitConverter.windCardinal(180), 'S');
+      expect(UnitConverter.windCardinal(270), 'O');
+      expect(UnitConverter.windCardinal(45), 'NE');
+      expect(UnitConverter.windCardinal(360), 'N'); // wraps
+    });
   });
 }

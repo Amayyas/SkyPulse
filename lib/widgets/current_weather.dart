@@ -61,7 +61,9 @@ class CurrentWeather extends ConsumerWidget {
               context,
               Icons.air,
               UnitConverter.formatWindSpeed(weather.windSpeed, unit),
-              'Vent',
+              weather.windDeg != null
+                  ? 'Vent ${UnitConverter.windCardinal(weather.windDeg!)}'
+                  : 'Vent',
             ),
             _buildDetailItem(
               context,
@@ -71,8 +73,36 @@ class CurrentWeather extends ConsumerWidget {
             ),
           ],
         ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.2, end: 0),
+        if (_secondaryDetails(context, unit).isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: _secondaryDetails(context, unit),
+          ).animate().fadeIn(delay: 700.ms).slideY(begin: 0.2, end: 0),
+        ],
       ],
     );
+  }
+
+  /// Pressure and visibility, shown only when the response carried them, so the
+  /// row simply doesn't appear rather than showing blanks.
+  List<Widget> _secondaryDetails(BuildContext context, UnitSystem unit) {
+    return [
+      if (weather.pressure != null)
+        _buildDetailItem(
+          context,
+          Icons.compress,
+          UnitConverter.formatPressure(weather.pressure!, unit),
+          'Pression',
+        ),
+      if (weather.visibility != null)
+        _buildDetailItem(
+          context,
+          Icons.visibility,
+          UnitConverter.formatVisibility(weather.visibility!, unit),
+          'Visibilité',
+        ),
+    ];
   }
 
   Widget _buildDetailItem(

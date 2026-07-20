@@ -109,6 +109,85 @@ void main() {
       expect(Weather.fromForecastJson(json).pop, 0.65);
     });
 
+    test('fromJson reads pressure, wind direction and visibility', () {
+      final json = {
+        'main': {
+          'temp': 20.5,
+          'feels_like': 19.5,
+          'temp_min': 18.0,
+          'temp_max': 22.0,
+          'humidity': 60,
+          'pressure': 1013,
+        },
+        'weather': [
+          {'description': 'clear sky', 'icon': '01d'},
+        ],
+        'wind': {'speed': 3.5, 'deg': 240},
+        'visibility': 10000,
+        'dt': 1638360000,
+        'name': 'Paris',
+      };
+
+      final weather = Weather.fromJson(json);
+      expect(weather.pressure, 1013);
+      expect(weather.windDeg, 240);
+      expect(weather.visibility, 10000);
+    });
+
+    test('pressure, windDeg and visibility are null when absent', () {
+      final json = {
+        'main': {
+          'temp': 20.5,
+          'feels_like': 19.5,
+          'temp_min': 18.0,
+          'temp_max': 22.0,
+          'humidity': 60,
+        },
+        'weather': [
+          {'description': 'clear sky', 'icon': '01d'},
+        ],
+        'wind': {'speed': 3.5},
+        'dt': 1638360000,
+        'name': 'Paris',
+      };
+
+      final weather = Weather.fromJson(json);
+      expect(weather.pressure, isNull);
+      expect(weather.windDeg, isNull);
+      expect(weather.visibility, isNull);
+    });
+
+    test(
+      'copyWith overrides the city name and preserves every other field',
+      () {
+        final original = Weather.fromJson({
+          'main': {
+            'temp': 20.5,
+            'feels_like': 19.5,
+            'temp_min': 18.0,
+            'temp_max': 22.0,
+            'humidity': 60,
+            'pressure': 1013,
+          },
+          'weather': [
+            {'description': 'clear sky', 'icon': '01d'},
+          ],
+          'wind': {'speed': 3.5, 'deg': 240},
+          'visibility': 8000,
+          'dt': 1638360000,
+          'name': 'API City',
+        });
+
+        final renamed = original.copyWith(cityName: 'Chosen City');
+
+        expect(renamed.cityName, 'Chosen City');
+        expect(renamed.temperature, 20.5);
+        expect(renamed.pressure, 1013);
+        expect(renamed.windDeg, 240);
+        expect(renamed.visibility, 8000);
+      },
+    );
+
     test('pop defaults to 0 when absent (e.g. current weather)', () {
       final json = {
         'main': {
