@@ -77,13 +77,13 @@ void main() {
       );
     });
 
-    test('windCardinal maps degrees to an 8-point compass', () {
-      expect(UnitConverter.windCardinal(0), 'N');
-      expect(UnitConverter.windCardinal(90), 'E');
-      expect(UnitConverter.windCardinal(180), 'S');
-      expect(UnitConverter.windCardinal(270), 'O');
-      expect(UnitConverter.windCardinal(45), 'NE');
-      expect(UnitConverter.windCardinal(360), 'N'); // wraps
+    test('windDirectionIndex maps degrees to an 8-point compass index', () {
+      expect(UnitConverter.windDirectionIndex(0), 0); // N
+      expect(UnitConverter.windDirectionIndex(90), 2); // E
+      expect(UnitConverter.windDirectionIndex(180), 4); // S
+      expect(UnitConverter.windDirectionIndex(270), 6); // W
+      expect(UnitConverter.windDirectionIndex(45), 1); // NE
+      expect(UnitConverter.windDirectionIndex(360), 0); // wraps to N
     });
   });
 }

@@ -63,9 +63,7 @@ class CurrentWeather extends ConsumerWidget {
               Icons.air,
               UnitConverter.formatWindSpeed(weather.windSpeed, unit),
               weather.windDeg != null
-                  ? l10n.windWithDirection(
-                      UnitConverter.windCardinal(weather.windDeg!),
-                    )
+                  ? l10n.windWithDirection(_compass(l10n, weather.windDeg!))
                   : l10n.wind,
             ),
             _buildDetailItem(
@@ -85,6 +83,21 @@ class CurrentWeather extends ConsumerWidget {
         ],
       ],
     );
+  }
+
+  /// Localised 8-point compass abbreviation for a wind direction in degrees.
+  String _compass(AppLocalizations l10n, int degrees) {
+    final labels = [
+      l10n.compassN,
+      l10n.compassNE,
+      l10n.compassE,
+      l10n.compassSE,
+      l10n.compassS,
+      l10n.compassSW,
+      l10n.compassW,
+      l10n.compassNW,
+    ];
+    return labels[UnitConverter.windDirectionIndex(degrees)];
   }
 
   /// The weather condition text. The API returns English; in French we run it
