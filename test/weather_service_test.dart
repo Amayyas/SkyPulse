@@ -29,7 +29,7 @@ void main() {
 
     setUp(() {
       mockClient = MockClient();
-      weatherService = WeatherService(client: mockClient);
+      weatherService = WeatherService(client: mockClient, apiKey: 'test-key');
     });
 
     /// Stubs a 200 response with [body], runs [call], and returns the URI the
@@ -83,6 +83,16 @@ void main() {
       final result = await weatherService.searchCities('P');
 
       expect(result, isEmpty);
+      verifyNever(mockClient.get(any));
+    });
+
+    test('an empty API key throws MissingApiKeyException, no request', () {
+      final service = WeatherService(client: mockClient, apiKey: '');
+
+      expect(
+        () => service.getCurrentWeather(48.8566, 2.3522),
+        throwsA(isA<MissingApiKeyException>()),
+      );
       verifyNever(mockClient.get(any));
     });
 

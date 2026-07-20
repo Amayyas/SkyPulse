@@ -7,9 +7,12 @@ import 'package:skypulse/services/weather_exception.dart';
 import 'package:skypulse/utils/constants.dart';
 
 class WeatherService {
-  WeatherService({http.Client? client}) : client = client ?? http.Client();
+  WeatherService({http.Client? client, String? apiKey})
+    : client = client ?? http.Client(),
+      _apiKey = apiKey ?? AppConstants.openWeatherMapApiKey;
 
   final http.Client client;
+  final String _apiKey;
 
   static const Duration _timeout = Duration(seconds: 10);
 
@@ -23,9 +26,12 @@ class WeatherService {
   /// illégaux tels quels dans une URI. `Uri.https` impose le schéma et encode
   /// les valeurs.
   Uri _apiUri(String path, Map<String, String> queryParameters) {
+    // No key means the build was never configured — surface that as its own
+    // error rather than firing a request that can only come back 401.
+    if (_apiKey.isEmpty) throw const MissingApiKeyException();
     return Uri.https(AppConstants.apiHost, path, {
       ...queryParameters,
-      'appid': AppConstants.openWeatherMapApiKey,
+      'appid': _apiKey,
     });
   }
 
