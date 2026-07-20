@@ -1,36 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AppTheme {
-  // Thème dynamique basé sur l'heure de la journée
-  static ThemeData getDynamicTheme() {
-    final hour = DateTime.now().hour;
+/// The six moods the theme moves through over a day.
+enum TimeOfDayTheme { night, dawn, morning, afternoon, evening, dusk }
 
-    // Nuit (22h - 5h) : Ciel noir/bleu très foncé
-    if (hour >= 22 || hour < 5) {
-      return _getNightTheme();
-    }
-    // Aube (5h - 7h) : Ciel rose/orange doux
-    else if (hour >= 5 && hour < 7) {
-      return _getDawnTheme();
-    }
-    // Matin (7h - 12h) : Ciel bleu clair
-    else if (hour >= 7 && hour < 12) {
-      return _getMorningTheme();
-    }
-    // Après-midi (12h - 17h) : Ciel bleu vif
-    else if (hour >= 12 && hour < 17) {
-      return _getAfternoonTheme();
-    }
-    // Soir (17h - 19h) : Ciel orange/doré
-    else if (hour >= 17 && hour < 19) {
-      return _getEveningTheme();
-    }
-    // Crépuscule (19h - 22h) : Ciel bleu foncé/violet
-    else {
-      return _getDuskTheme();
-    }
+class AppTheme {
+  /// Which mood a given hour belongs to. Pure and total, so it can be tested at
+  /// every boundary without waiting for the clock.
+  static TimeOfDayTheme bucketForHour(int hour) {
+    if (hour >= 22 || hour < 5) return TimeOfDayTheme.night; // 22h–5h
+    if (hour < 7) return TimeOfDayTheme.dawn; // 5h–7h
+    if (hour < 12) return TimeOfDayTheme.morning; // 7h–12h
+    if (hour < 17) return TimeOfDayTheme.afternoon; // 12h–17h
+    if (hour < 19) return TimeOfDayTheme.evening; // 17h–19h
+    return TimeOfDayTheme.dusk; // 19h–22h
   }
+
+  static ThemeData themeFor(TimeOfDayTheme bucket) => switch (bucket) {
+    TimeOfDayTheme.night => _getNightTheme(),
+    TimeOfDayTheme.dawn => _getDawnTheme(),
+    TimeOfDayTheme.morning => _getMorningTheme(),
+    TimeOfDayTheme.afternoon => _getAfternoonTheme(),
+    TimeOfDayTheme.evening => _getEveningTheme(),
+    TimeOfDayTheme.dusk => _getDuskTheme(),
+  };
 
   // Nuit : Bleu très foncé avec étoiles
   static ThemeData _getNightTheme() {
