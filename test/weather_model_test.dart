@@ -89,6 +89,46 @@ void main() {
       expect(weather.description, 'clear sky');
     });
 
+    test('fromForecastJson reads pop (probability of precipitation)', () {
+      final json = {
+        'dt': 1638360000,
+        'main': {
+          'temp': 20.5,
+          'feels_like': 19.5,
+          'temp_min': 18.0,
+          'temp_max': 22.0,
+          'humidity': 60,
+        },
+        'weather': [
+          {'description': 'light rain', 'icon': '10d'},
+        ],
+        'wind': {'speed': 3.5},
+        'pop': 0.65,
+      };
+
+      expect(Weather.fromForecastJson(json).pop, 0.65);
+    });
+
+    test('pop defaults to 0 when absent (e.g. current weather)', () {
+      final json = {
+        'main': {
+          'temp': 20.5,
+          'feels_like': 19.5,
+          'temp_min': 18.0,
+          'temp_max': 22.0,
+          'humidity': 60,
+        },
+        'weather': [
+          {'description': 'clear sky', 'icon': '01d'},
+        ],
+        'wind': {'speed': 3.5},
+        'dt': 1638360000,
+        'name': 'Paris',
+      };
+
+      expect(Weather.fromJson(json).pop, 0);
+    });
+
     // A 200 does not guarantee a well-formed body. A missing or wrong-typed
     // required field must become a MalformedResponseException, never a raw
     // TypeError or RangeError escaping to the UI.

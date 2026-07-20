@@ -16,6 +16,12 @@ class Weather {
   final double? lat;
   final double? lon;
 
+  /// Probability of precipitation, 0..1. Only the /forecast endpoint provides
+  /// it; current-weather responses have no equivalent, so it defaults to 0
+  /// there. Optional so the many places that build a Weather by hand don't all
+  /// have to pass it.
+  final double pop;
+
   Weather({
     required this.cityName,
     required this.temperature,
@@ -31,6 +37,7 @@ class Weather {
     required this.sunset,
     this.lat,
     this.lon,
+    this.pop = 0,
   });
 
   factory Weather.fromJson(Map<String, dynamic> json) {
@@ -68,6 +75,7 @@ class Weather {
       date: _date(json),
       sunrise: 0,
       sunset: 0,
+      pop: _optionalNum(json, 'pop'),
     );
   }
 

@@ -63,6 +63,8 @@ class HourlyForecast extends ConsumerWidget {
                             style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
+                          const SizedBox(height: 4),
+                          _PrecipitationChance(pop: weather.pop),
                         ],
                       ),
                     ),
@@ -74,6 +76,42 @@ class HourlyForecast extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Shows the chance of rain under an hour, as a droplet + percentage.
+///
+/// The space is always reserved, even at 0%, so the cards keep a uniform
+/// height instead of shifting as dry and wet hours scroll past. A dry hour is
+/// simply left blank rather than labelled "0%", which would be noise.
+class _PrecipitationChance extends StatelessWidget {
+  const _PrecipitationChance({required this.pop});
+
+  final double pop;
+
+  @override
+  Widget build(BuildContext context) {
+    final percent = (pop.clamp(0, 1) * 100).round();
+    final color = Theme.of(context).colorScheme.primary;
+
+    return SizedBox(
+      height: 16,
+      child: percent == 0
+          ? null
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.water_drop, size: 12, color: color),
+                const SizedBox(width: 2),
+                Text(
+                  '$percent%',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: color),
+                ),
+              ],
+            ),
     );
   }
 }
