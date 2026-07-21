@@ -5,12 +5,12 @@ import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/services/location_exception.dart';
 import 'package:skypulse/services/weather_exception.dart';
 
-/// Ce qu'on montre à l'utilisateur quand une requête échoue.
+/// What we show the user when a request fails.
 ///
-/// Auparavant, l'écran affichait le résultat brut de `$error`, soit des choses
-/// comme `ClientException: Failed host lookup: 'api.openweathermap.org'` —
-/// illisible, et sans indication de ce qu'il fallait faire. Chaque cas connu a
-/// désormais son message et son geste.
+/// The screen used to render the raw `$error` — things like
+/// `ClientException: Failed host lookup: 'api.openweathermap.org'` — unreadable,
+/// with no hint of what to do. Every known case now has its own message and
+/// action.
 class ErrorView extends StatelessWidget {
   const ErrorView({super.key, required this.error, required this.onRetry});
 
@@ -21,9 +21,9 @@ class ErrorView extends StatelessWidget {
   Widget build(BuildContext context) {
     final info = _describe(error, AppLocalizations.of(context));
 
-    // Scrollable : sans ça, le RefreshIndicator qui enveloppe cet écran n'a
-    // rien à quoi s'accrocher, et le geste « tirer pour réessayer » ne fait
-    // rien — précisément sur l'écran où l'utilisateur va le tenter.
+    // Scrollable: without this, the RefreshIndicator wrapping this screen has
+    // nothing to grab onto, and the pull-to-refresh gesture does nothing —
+    // exactly on the screen where the user will reach for it.
     return LayoutBuilder(
       builder: (context, constraints) => SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),

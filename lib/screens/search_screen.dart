@@ -75,9 +75,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      // Une recherche qui échoue affichait auparavant une page blanche,
-      // impossible à distinguer d'une ville qui n'existe pas — ou d'une appli
-      // cassée. On dit ce qui s'est passé.
+      // A failed search used to show a blank page, indistinguishable from a
+      // city that doesn't exist — or a broken app. Say what happened.
       if (!mounted) return;
       // Clear the cache so retyping the same query retries it — otherwise the
       // `query != _lastQuery` guard in _onSearchChanged would suppress it, and
@@ -192,9 +191,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       );
     }
 
-    // Une recherche aboutie mais sans résultat n'est pas une erreur : l'API
-    // répond 200 avec un tableau vide. Le dire explicitement, au lieu de
-    // laisser une page blanche qu'on ne peut pas distinguer d'une panne.
+    // A successful search with no results isn't an error: the API responds 200
+    // with an empty array. Say so explicitly, instead of leaving a blank page
+    // that can't be told apart from a failure.
     if (!_isLoading && _controller.text.length >= 2) {
       return Center(
         child: Padding(

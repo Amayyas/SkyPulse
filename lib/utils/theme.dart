@@ -25,7 +25,7 @@ class AppTheme {
     TimeOfDayTheme.dusk => _getDuskTheme(),
   };
 
-  // Nuit : Bleu très foncé avec étoiles
+  // Night: very dark blue with stars.
   static ThemeData _getNightTheme() {
     return ThemeData(
       useMaterial3: true,
@@ -53,7 +53,7 @@ class AppTheme {
     );
   }
 
-  // Aube : Rose et orange doux
+  // Dawn: soft pink and orange.
   static ThemeData _getDawnTheme() {
     return ThemeData(
       useMaterial3: true,
@@ -81,7 +81,7 @@ class AppTheme {
     );
   }
 
-  // Matin : Bleu clair et frais
+  // Morning: light, fresh blue.
   static ThemeData _getMorningTheme() {
     return ThemeData(
       useMaterial3: true,
@@ -109,7 +109,7 @@ class AppTheme {
     );
   }
 
-  // Après-midi : Bleu vif et lumineux
+  // Afternoon: vivid, bright blue.
   static ThemeData _getAfternoonTheme() {
     return ThemeData(
       useMaterial3: true,
@@ -137,7 +137,7 @@ class AppTheme {
     );
   }
 
-  // Soir : Orange et doré
+  // Evening: orange and gold.
   static ThemeData _getEveningTheme() {
     return ThemeData(
       useMaterial3: true,
@@ -165,7 +165,7 @@ class AppTheme {
     );
   }
 
-  // Crépuscule : Bleu foncé/violet
+  // Dusk: deep blue / violet.
   static ThemeData _getDuskTheme() {
     return ThemeData(
       useMaterial3: true,
