@@ -1,23 +1,22 @@
 class AppConstants {
-  /// Clé API OpenWeatherMap, injectée au build — jamais écrite dans un fichier
-  /// suivi par git.
+  /// OpenWeatherMap API key, injected at build time — never written to a
+  /// git-tracked file.
   ///
-  ///   flutter run --dart-define=OWM_API_KEY=votre_cle
+  ///   flutter run --dart-define=OWM_API_KEY=your_key
   ///
-  /// Vide si non fournie ; le service lève alors une MissingApiKeyException
-  /// plutôt que de partir en requête avec une clé absente. Obtenez une clé
-  /// gratuite sur https://openweathermap.org/api
+  /// Empty when not supplied; the service then throws a MissingApiKeyException
+  /// rather than firing a request with no key. Get a free key at
+  /// https://openweathermap.org/api
   static const String openWeatherMapApiKey = String.fromEnvironment(
     'OWM_API_KEY',
   );
 
-  /// Hôte commun à l'API météo et à l'API de géocodage.
+  /// Host shared by the weather and geocoding APIs.
   ///
-  /// Exposé en hôte + chemins plutôt qu'en URL complète : les requêtes se
-  /// construisent avec `Uri.https`, qui impose le schéma et encode les
-  /// paramètres. Une URL assemblée à la main laisse passer les deux bugs que
-  /// ce découpage rend impossibles — le HTTP en clair et les accents non
-  /// encodés.
+  /// Exposed as host + paths rather than a full URL: requests are built with
+  /// `Uri.https`, which imposes the scheme and encodes the parameters. A
+  /// hand-assembled URL lets through the two bugs this split makes impossible —
+  /// cleartext HTTP and unencoded accents.
   static const String apiHost = 'api.openweathermap.org';
 
   static const String currentWeatherPath = '/data/2.5/weather';
@@ -26,7 +25,7 @@ class AppConstants {
 
   static const String iconUrl = 'https://openweathermap.org/img/wn/';
 
-  // Traductions des descriptions météo en français
+  // French translations of the weather descriptions (shown to French users).
   static String translateWeatherDescription(String description) {
     final translations = {
       'clear sky': 'ciel dégagé',

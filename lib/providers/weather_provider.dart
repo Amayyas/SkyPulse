@@ -31,7 +31,7 @@ final currentLocationProvider = FutureProvider<Position>((ref) async {
   return await locationService.getCurrentLocation();
 });
 
-// Provider pour la ville sélectionnée (stocke l'objet CitySuggestion complet)
+// Provider for the selected city (stores the full CitySuggestion object).
 class SelectedCityNotifier extends Notifier<CitySuggestion?> {
   static const String _prefKey = 'selected_city';
 
@@ -67,23 +67,23 @@ final selectedCityProvider =
       SelectedCityNotifier.new,
     );
 
-// Provider pour obtenir la météo actuelle
+// Provider for the current weather.
 final currentWeatherProvider = FutureProvider<Weather>((ref) async {
   final weatherService = ref.watch(weatherServiceProvider);
   final selectedCity = ref.watch(selectedCityProvider);
 
   if (selectedCity != null) {
-    // Si une ville est sélectionnée, utiliser ses coordonnées
+    // If a city is selected, use its coordinates.
     final weather = await weatherService.getCurrentWeather(
       selectedCity.lat,
       selectedCity.lon,
     );
-    // FORCER le nom de la ville avec celui qu'on a cherché, pas celui de l'API
-    // météo (deux villes peuvent partager des coordonnées).
+    // Force the city name to the one we searched for, not the weather API's
+    // (two cities can share the same coordinates).
     return weather.copyWith(cityName: selectedCity.name);
   }
 
-  // Par défaut, utiliser la position GPS
+  // Default to the GPS position.
   final position = await ref.watch(currentLocationProvider.future);
   return await weatherService.getCurrentWeather(
     position.latitude,
@@ -96,11 +96,11 @@ final forecastProvider = FutureProvider<List<Weather>>((ref) async {
   final selectedCity = ref.watch(selectedCityProvider);
 
   if (selectedCity != null) {
-    // Si une ville est sélectionnée, utiliser ses coordonnées
+    // If a city is selected, use its coordinates.
     return await weatherService.getForecast(selectedCity.lat, selectedCity.lon);
   }
 
-  // Par défaut, utiliser la position GPS
+  // Default to the GPS position.
   final position = await ref.watch(currentLocationProvider.future);
   return await weatherService.getForecast(
     position.latitude,

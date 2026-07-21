@@ -1,40 +1,40 @@
-/// Les échecs que la géolocalisation peut rencontrer.
+/// The failures geolocation can hit.
 ///
-/// Comme pour la météo, chaque cas est distinct pour que l'interface puisse
-/// dire ce qui s'est passé et proposer le bon geste. Le service renvoyait
-/// auparavant des `String` brutes via `Future.error`, que l'écran affichait
-/// telles quelles — sans distinguer un service coupé d'une permission refusée,
-/// et sans offrir de sortie à l'utilisateur bloqué.
+/// As with weather, each case is distinct so the UI can say what happened and
+/// offer the right action. The service used to return raw `String`s via
+/// `Future.error`, which the screen showed verbatim — without telling a
+/// disabled service apart from a denied permission, and without offering a way
+/// out to a blocked user.
 sealed class LocationException implements Exception {
   const LocationException(this.message);
 
-  /// Description technique, destinée aux logs et aux tests — jamais à l'écran.
+  /// Technical description, for logs and tests — never the screen.
   final String message;
 
   @override
   String toString() => '$runtimeType: $message';
 }
 
-/// La localisation est désactivée au niveau de l'appareil.
+/// Location is turned off at the device level.
 class LocationServiceDisabledException extends LocationException {
   const LocationServiceDisabledException()
     : super('Location services are disabled');
 }
 
-/// L'utilisateur a refusé la permission pour cette fois.
+/// The user denied the permission this time.
 class LocationPermissionDeniedException extends LocationException {
   const LocationPermissionDeniedException()
     : super('Location permission was denied');
 }
 
-/// La permission est refusée définitivement : seule une visite aux réglages
-/// système peut la rétablir. C'est le cas qui justifie un bouton dédié.
+/// The permission is permanently denied: only a trip to the system settings can
+/// restore it. This is the case that warrants a dedicated button.
 class LocationPermissionPermanentlyDeniedException extends LocationException {
   const LocationPermissionPermanentlyDeniedException()
     : super('Location permission is permanently denied');
 }
 
-/// La position n'est pas arrivée dans le délai imparti.
+/// The position didn't arrive within the allotted time.
 class LocationTimeoutException extends LocationException {
   const LocationTimeoutException() : super('Location request timed out');
 }

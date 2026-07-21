@@ -19,12 +19,11 @@ class WeatherService {
   /// Closes the underlying HTTP client. Call from the provider's `onDispose`.
   void dispose() => client.close();
 
-  /// Construit une requête HTTPS dont les paramètres sont percent-encodés.
+  /// Builds an HTTPS request whose parameters are percent-encoded.
   ///
-  /// Ne jamais assembler une URL par interpolation de chaîne : un nom de ville
-  /// contient des espaces et des accents (`New York`, `Saint-Étienne`) qui sont
-  /// illégaux tels quels dans une URI. `Uri.https` impose le schéma et encode
-  /// les valeurs.
+  /// Never assemble a URL by string interpolation: a city name contains spaces
+  /// and accents (`New York`, `Saint-Étienne`) that are illegal as-is in a URI.
+  /// `Uri.https` imposes the scheme and encodes the values.
   Uri _apiUri(String path, Map<String, String> queryParameters) {
     // No key means the build was never configured — surface that as its own
     // error rather than firing a request that can only come back 401.
@@ -35,10 +34,10 @@ class WeatherService {
     });
   }
 
-  /// Émet la requête et traduit chaque échec en [WeatherException].
+  /// Sends the request and translates each failure into a [WeatherException].
   ///
-  /// Ne renvoie que sur un 200. Tout le reste lève : un appel qui retourne
-  /// normalement a donc forcément reçu une vraie réponse du serveur.
+  /// Only returns on a 200. Everything else throws: a call that returns
+  /// normally has therefore received a genuine server response.
   Future<String> _get(Uri url, {String? cityName}) async {
     final http.Response response;
     try {
@@ -46,9 +45,8 @@ class WeatherService {
     } on TimeoutException {
       throw const NoConnectionException('The request timed out');
     } on http.ClientException catch (e) {
-      // package:http emballe ici les échecs de socket, de DNS et de TLS, sur
-      // toutes les plateformes — d'où l'absence de dart:io, indisponible sur le
-      // web.
+      // package:http wraps socket, DNS and TLS failures here, on every platform
+      // — hence no dart:io, which isn't available on the web.
       throw NoConnectionException('The request never reached the server: $e');
     }
 
@@ -61,9 +59,9 @@ class WeatherService {
     };
   }
 
-  /// Décode un corps de réponse, en transformant une forme inattendue en
-  /// [MalformedResponseException] plutôt qu'en `TypeError` remonté jusqu'à
-  /// l'interface.
+  /// Decodes a response body, turning an unexpected shape into a
+  /// [MalformedResponseException] rather than a `TypeError` bubbling up to the
+  /// UI.
   T _decode<T>(String body, T Function(dynamic json) parse) {
     try {
       return parse(jsonDecode(body));
@@ -112,15 +110,15 @@ class WeatherService {
       return list.map((e) => Weather.fromForecastJson(e)).toList();
     });
 
-    // Interpoler pour obtenir des prévisions horaires
+    // Interpolate to get hourly forecasts.
     return _interpolateHourlyForecasts(forecasts3h);
   }
 
-  /// Rechercher des suggestions de villes.
+  /// Searches for city suggestions.
   ///
-  /// Une requête trop courte ne vaut pas un appel réseau : renvoie une liste
-  /// vide. Une recherche sans résultat en renvoie une aussi — ce n'est pas une
-  /// erreur, et l'API répond 200 avec un tableau vide. Tout le reste lève.
+  /// A query that's too short isn't worth a network call: returns an empty
+  /// list. A search with no match returns one too — that's not an error, the
+  /// API responds 200 with an empty array. Everything else throws.
   Future<List<CitySuggestion>> searchCities(String query) async {
     if (query.length < 2) {
       return [];
@@ -137,7 +135,7 @@ class WeatherService {
     });
   }
 
-  // Interpoler les prévisions de 3h en prévisions horaires
+  // Interpolate the 3-hourly forecasts into hourly ones.
   List<Weather> _interpolateHourlyForecasts(List<Weather> forecasts3h) {
     if (forecasts3h.isEmpty) return [];
 
@@ -147,10 +145,10 @@ class WeatherService {
       final current = forecasts3h[i];
       final next = forecasts3h[i + 1];
 
-      // Ajouter la prévision actuelle
+      // Add the current forecast.
       hourlyForecasts.add(current);
 
-      // Interpoler les 2 heures entre current et next
+      // Interpolate the 2 hours between current and next.
       for (int hour = 1; hour < 3; hour++) {
         final ratio = hour / 3.0;
         final interpolatedDate = current.date.add(Duration(hours: hour));
@@ -166,8 +164,8 @@ class WeatherService {
                 (next.feelsLike - current.feelsLike) * ratio,
             tempMin: current.tempMin + (next.tempMin - current.tempMin) * ratio,
             tempMax: current.tempMax + (next.tempMax - current.tempMax) * ratio,
-            description: current.description, // Garder la description actuelle
-            iconCode: current.iconCode, // Garder l'icône actuelle
+            description: current.description, // keep the current description
+            iconCode: current.iconCode, // keep the current icon
             humidity:
                 current.humidity +
                 ((next.humidity - current.humidity) * ratio).round(),
@@ -183,7 +181,7 @@ class WeatherService {
       }
     }
 
-    // Ajouter la dernière prévision
+    // Add the last forecast.
     hourlyForecasts.add(forecasts3h.last);
 
     return hourlyForecasts;
