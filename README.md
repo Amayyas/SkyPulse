@@ -49,7 +49,7 @@ then:
 flutter run --dart-define=OWM_API_KEY=your_key
 ```
 
-Without a key the app runs but shows a "Clé API non configurée" screen.
+Without a key the app runs but shows an "API key not configured" screen.
 
 > 💡 To avoid retyping the key, put it in a git-ignored `dart_define.json` and
 > run `flutter run --dart-define-from-file=dart_define.json`.
