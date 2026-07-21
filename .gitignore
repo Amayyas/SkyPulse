@@ -56,3 +56,6 @@ app.*.map.json
 
 # Generated localizations (flutter gen-l10n, regenerated on pub get)
 lib/l10n/app_localizations*.dart
+
+# Local API key for --dart-define-from-file (never commit real keys)
+dart_define.json
