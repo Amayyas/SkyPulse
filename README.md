@@ -1,6 +1,7 @@
 # SkyPulse ⛅
 
 [![CI](https://github.com/Amayyas/SkyPulse/actions/workflows/ci.yml/badge.svg)](https://github.com/Amayyas/SkyPulse/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/Amayyas/SkyPulse?sort=semver)](https://github.com/Amayyas/SkyPulse/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A modern Flutter weather app: real-time forecasts with a design that follows the
