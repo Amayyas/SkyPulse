@@ -3,8 +3,6 @@
 [![CI](https://github.com/Amayyas/SkyPulse/actions/workflows/ci.yml/badge.svg)](https://github.com/Amayyas/SkyPulse/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**English** · [Français](README.fr.md)
-
 A modern Flutter weather app: real-time forecasts with a design that follows the
 time of day.
 
@@ -54,8 +52,8 @@ Without a key the app runs but shows an "API key not configured" screen.
 > 💡 To avoid retyping the key, put it in a git-ignored `dart_define.json` and
 > run `flutter run --dart-define-from-file=dart_define.json`.
 
-See [API_SETUP.md](API_SETUP.md) for details and [CONTRIBUTING.md](CONTRIBUTING.md)
-for the full development setup (note: code generation is a **required** step).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development setup (note:
+code generation is a **required** step).
 
 ## 📊 Interpolated hourly forecast
 
