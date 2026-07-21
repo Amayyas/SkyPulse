@@ -8,7 +8,7 @@
 PRODUCT_NAME = skypulse
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.skypulse.skypulse
+PRODUCT_BUNDLE_IDENTIFIER = io.github.amayyas.skypulse
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 com.example.skypulse. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 Amayyas. All rights reserved.
