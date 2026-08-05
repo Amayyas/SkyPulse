@@ -50,6 +50,64 @@ class Weather {
     this.visibility,
   });
 
+  /// Serialises to the app's own shape for the offline cache.
+  ///
+  /// Deliberately not the OpenWeatherMap payload shape: this round-trips every
+  /// field the app actually holds, including the ones the API nests or omits.
+  /// Paired with [Weather.fromCacheJson].
+  Map<String, dynamic> toCacheJson() => {
+    'cityName': cityName,
+    'temperature': temperature,
+    'feelsLike': feelsLike,
+    'tempMin': tempMin,
+    'tempMax': tempMax,
+    'description': description,
+    'iconCode': iconCode,
+    'humidity': humidity,
+    'windSpeed': windSpeed,
+    'date': date.millisecondsSinceEpoch,
+    'sunrise': sunrise,
+    'sunset': sunset,
+    'lat': lat,
+    'lon': lon,
+    'pop': pop,
+    'pressure': pressure,
+    'windDeg': windDeg,
+    'visibility': visibility,
+  };
+
+  /// Reads back what [toCacheJson] wrote.
+  ///
+  /// A cache entry we wrote ourselves should be well-formed, but a corrupt or
+  /// older-format one must not crash the app — the caller treats a
+  /// [MalformedResponseException] as "no usable cache".
+  factory Weather.fromCacheJson(Map<String, dynamic> json) {
+    try {
+      return Weather(
+        cityName: json['cityName'] as String,
+        temperature: (json['temperature'] as num).toDouble(),
+        feelsLike: (json['feelsLike'] as num).toDouble(),
+        tempMin: (json['tempMin'] as num).toDouble(),
+        tempMax: (json['tempMax'] as num).toDouble(),
+        description: json['description'] as String,
+        iconCode: json['iconCode'] as String,
+        humidity: (json['humidity'] as num).round(),
+        windSpeed: (json['windSpeed'] as num).toDouble(),
+        date: DateTime.fromMillisecondsSinceEpoch(json['date'] as int),
+        sunrise: (json['sunrise'] as num).round(),
+        sunset: (json['sunset'] as num).round(),
+        lat: (json['lat'] as num?)?.toDouble(),
+        lon: (json['lon'] as num?)?.toDouble(),
+        pop: (json['pop'] as num?)?.toDouble() ?? 0,
+        pressure: (json['pressure'] as num?)?.round(),
+        windDeg: (json['windDeg'] as num?)?.round(),
+        visibility: (json['visibility'] as num?)?.round(),
+      );
+    } catch (e) {
+      throw MalformedResponseException('Could not read the cached weather: $e');
+    }
+  }
+
   /// Returns a copy with the given fields replaced. Used to override the city
   /// name without re-listing every field by hand — and without silently
   /// dropping the ones a caller forgets.

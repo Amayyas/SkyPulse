@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/providers/weather_provider.dart';
@@ -22,7 +23,7 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: weatherAsync.when(
-          data: (weather) => Text(weather.cityName),
+          data: (weather) => Text(weather.data.cityName),
           loading: () => Text(l10n.loading),
           error: (_, _) => Text(l10n.genericError),
         ),
@@ -59,9 +60,13 @@ class HomeScreen extends ConsumerWidget {
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 children: [
-                  CurrentWeather(weather: weather),
-                  HourlyForecast(forecast: forecast),
-                  DailyForecast(forecast: forecast),
+                  // Only shown when the data came from cache, so old weather is
+                  // never passed off as current.
+                  if (weather.isStale)
+                    _OfflineBanner(cachedAt: weather.cachedAt!),
+                  CurrentWeather(weather: weather.data),
+                  HourlyForecast(forecast: forecast.data),
+                  DailyForecast(forecast: forecast.data),
                 ],
               ),
             ),
@@ -125,6 +130,45 @@ class HomeScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Tells the user the weather on screen came from the offline cache, and when
+/// it was last fetched — rather than letting stale data look current.
+class _OfflineBanner extends StatelessWidget {
+  const _OfflineBanner({required this.cachedAt});
+
+  final DateTime cachedAt;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
+    final scheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: scheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.cloud_off, size: 18, color: scheme.onSecondaryContainer),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              l10n.offlineCached(DateFormat.Hm(locale).format(cachedAt)),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: scheme.onSecondaryContainer,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

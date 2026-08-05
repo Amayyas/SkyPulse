@@ -1,30 +1,34 @@
 {
   "@@locale": "en",
-
   "loading": "Loading…",
   "genericError": "Error",
   "settings": "Settings",
   "retry": "Retry",
   "openSettings": "Open settings",
-
   "searchCityTitle": "Search for a city",
   "searchCityHint": "Enter a city name",
   "useCurrentLocation": "Use my current location",
   "noCityFound": "No city matches “{query}”",
   "@noCityFound": {
-    "placeholders": { "query": { "type": "String" } }
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
   },
-
   "humidity": "Humidity",
   "wind": "Wind",
   "windWithDirection": "Wind {direction}",
   "@windWithDirection": {
-    "placeholders": { "direction": { "type": "String" } }
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      }
+    }
   },
   "feelsLike": "Feels like",
   "pressure": "Pressure",
   "visibility": "Visibility",
-
   "compassN": "N",
   "compassNE": "NE",
   "compassE": "E",
@@ -33,13 +37,15 @@
   "compassSW": "SW",
   "compassW": "W",
   "compassNW": "NW",
-
   "hourlyForecast": "Hourly forecast",
   "dailyForecast": "{count, plural, other{{count}-day forecast}}",
   "@dailyForecast": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "errApiKeyMissingTitle": "API key not configured",
   "errApiKeyMissingHint": "No OpenWeatherMap key was provided at build time. Run with --dart-define=OWM_API_KEY=your_key (see the README).",
   "errApiKeyInvalidTitle": "Invalid API key",
@@ -47,7 +53,11 @@
   "errCityNotFoundTitle": "City not found",
   "errCityNotFoundTitleNamed": "City not found: {city}",
   "@errCityNotFoundTitleNamed": {
-    "placeholders": { "city": { "type": "String" } }
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
   },
   "errCityNotFoundHint": "Check the spelling, or try a larger city nearby.",
   "errRateLimitTitle": "Too many requests",
@@ -57,7 +67,11 @@
   "errServiceTitle": "Weather service unavailable",
   "errServiceHint": "The server returned error {code}. This isn’t on your end.",
   "@errServiceHint": {
-    "placeholders": { "code": { "type": "int" } }
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
   },
   "errMalformedTitle": "Unexpected response",
   "errMalformedHint": "The weather service returned data that couldn’t be read.",
@@ -71,11 +85,18 @@
   "errLocationTimeoutHint": "Couldn’t get your position in time. Try again, or search for a city.",
   "errGenericTitle": "Something went wrong",
   "errGenericHint": "Try again in a moment.",
-
   "settingsUnitsTitle": "Units",
   "settingsMetricLabel": "Metric (°C, km/h)",
   "settingsImperialLabel": "Imperial (°F, mph)",
   "settingsPreviewTitle": "Preview",
   "settingsTempPreview": "Temperature (25 °C)",
-  "settingsWindPreview": "Wind (5.14 m/s)"
+  "settingsWindPreview": "Wind (5.14 m/s)",
+  "offlineCached": "Offline — showing data from {time}",
+  "@offlineCached": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }
