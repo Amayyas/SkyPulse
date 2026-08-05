@@ -7,6 +7,26 @@
 A modern Flutter weather app: real-time forecasts with a design that follows the
 time of day.
 
+## 📥 Download
+
+Every [release](https://github.com/Amayyas/SkyPulse/releases) ships downloadable
+builds:
+
+| Platform | |
+| --- | --- |
+| **Android** | `app-arm64-v8a-release.apk` (most phones), `armeabi-v7a` (older), `x86_64` (emulators) |
+| **Linux** | `skypulse-<tag>-linux-x64.zip` |
+| **Windows** | `skypulse-<tag>-windows-x64.zip` |
+| **Web** | live demo at [amayyas.github.io/SkyPulse](https://amayyas.github.io/SkyPulse/) |
+
+> [!NOTE]
+> The Android APKs are **signed with a debug key**, so Android will warn about
+> an unknown source when sideloading. They are not Play Store builds — proper
+> release signing needs a keystore (tracked separately).
+>
+> iOS and macOS builds are not published: they require a paid Apple Developer
+> account for signing.
+
 ## ✨ Features
 
 - 🌡️ **Current conditions** — temperature, feels-like, humidity, wind (with
