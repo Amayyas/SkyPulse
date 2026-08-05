@@ -16,6 +16,10 @@ on:
         description: "Tag to build and attach to"
         required: true
         type: string
+    secrets:
+      OWM_API_KEY:
+        description: "OpenWeatherMap key baked into the published builds"
+        required: false
   workflow_dispatch:
     inputs:
       tag:
@@ -62,8 +66,11 @@ jobs:
       - name: Attach to release
         env:
           GH_TOKEN: ${{ github.token }}
+          # Via env, never interpolated into the shell: an expression expanded
+          # inside `run:` lets a crafted tag execute arbitrary code on a runner
+          # that holds the API key and contents:write.
+          TAG: ${{ inputs.tag }}
         run: |
-          TAG="${{ inputs.tag }}"
           gh release upload "$TAG" \
             build/app/outputs/flutter-apk/*-release.apk --clobber
 
@@ -112,8 +119,9 @@ jobs:
 
       - name: Package
         shell: bash
+        env:
+          TAG: ${{ inputs.tag }}
         run: |
-          TAG="${{ inputs.tag }}"
           OS=$(echo "${{ runner.os }}" | tr '[:upper:]' '[:lower:]')
           cd "${{ matrix.path }}"
           7z a "$GITHUB_WORKSPACE/skypulse-$TAG-$OS-x64.zip" .
@@ -122,8 +130,8 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
         run: |
-          TAG="${{ inputs.tag }}"
           OS=$(echo "${{ runner.os }}" | tr '[:upper:]' '[:lower:]')
           gh release upload "$TAG" "skypulse-$TAG-$OS-x64.zip" --clobber
 

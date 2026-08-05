@@ -39,4 +39,8 @@ jobs:
     uses: ./.github/workflows/release.yml
     with:
       tag: ${{ needs.release-please.outputs.tag }}
-    secrets: inherit
+    # Mapped explicitly rather than `secrets: inherit`: the called workflow
+    # needs this one key, not every secret the repo holds. github.token is
+    # available to reusable workflows without being passed.
+    secrets:
+      OWM_API_KEY: ${{ secrets.OWM_API_KEY }}
