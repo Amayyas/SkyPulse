@@ -4,6 +4,14 @@ All notable changes are recorded here. This file is maintained automatically by
 [release-please](https://github.com/googleapis/release-please) from
 [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [0.2.2](https://github.com/Amayyas/SkyPulse/compare/v0.2.1...v0.2.2) (2026-08-05)
+
+
+### Bug Fixes
+
+* actually build release artifacts when a release is created ([96f556a](https://github.com/Amayyas/SkyPulse/commit/96f556a81bbebf4ed02420b83090b1fcbe538e7e))
+* close a shell-injection hole and stop over-sharing secrets in the release workflow ([6aad591](https://github.com/Amayyas/SkyPulse/commit/6aad59196de867c78614d4e8116ee1f87e94ffe3))
+
 ## [0.2.1](https://github.com/Amayyas/SkyPulse/compare/v0.2.0...v0.2.1) (2026-08-05)
 
 
