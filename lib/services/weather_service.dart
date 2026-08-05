@@ -105,13 +105,13 @@ class WeatherService {
       }),
     );
 
-    final forecasts3h = _decode(body, (json) {
+    // Returned as-is: every entry is a real 3-hourly reading from the API.
+    // These used to be interpolated up to 24 hourly points, which invented
+    // conditions the forecaster never issued — see the note on the class.
+    return _decode(body, (json) {
       final list = (json as Map<String, dynamic>)['list'] as List<dynamic>;
       return list.map((e) => Weather.fromForecastJson(e)).toList();
     });
-
-    // Interpolate to get hourly forecasts.
-    return _interpolateHourlyForecasts(forecasts3h);
   }
 
   /// Searches for city suggestions.
@@ -133,57 +133,5 @@ class WeatherService {
       final list = json as List<dynamic>;
       return list.map((e) => CitySuggestion.fromJson(e)).toList();
     });
-  }
-
-  // Interpolate the 3-hourly forecasts into hourly ones.
-  List<Weather> _interpolateHourlyForecasts(List<Weather> forecasts3h) {
-    if (forecasts3h.isEmpty) return [];
-
-    List<Weather> hourlyForecasts = [];
-
-    for (int i = 0; i < forecasts3h.length - 1; i++) {
-      final current = forecasts3h[i];
-      final next = forecasts3h[i + 1];
-
-      // Add the current forecast.
-      hourlyForecasts.add(current);
-
-      // Interpolate the 2 hours between current and next.
-      for (int hour = 1; hour < 3; hour++) {
-        final ratio = hour / 3.0;
-        final interpolatedDate = current.date.add(Duration(hours: hour));
-
-        hourlyForecasts.add(
-          Weather(
-            cityName: current.cityName,
-            temperature:
-                current.temperature +
-                (next.temperature - current.temperature) * ratio,
-            feelsLike:
-                current.feelsLike +
-                (next.feelsLike - current.feelsLike) * ratio,
-            tempMin: current.tempMin + (next.tempMin - current.tempMin) * ratio,
-            tempMax: current.tempMax + (next.tempMax - current.tempMax) * ratio,
-            description: current.description, // keep the current description
-            iconCode: current.iconCode, // keep the current icon
-            humidity:
-                current.humidity +
-                ((next.humidity - current.humidity) * ratio).round(),
-            windSpeed:
-                current.windSpeed +
-                (next.windSpeed - current.windSpeed) * ratio,
-            date: interpolatedDate,
-            sunrise: current.sunrise,
-            sunset: current.sunset,
-            pop: current.pop, // carried from the 3h slot, like the icon
-          ),
-        );
-      }
-    }
-
-    // Add the last forecast.
-    hourlyForecasts.add(forecasts3h.last);
-
-    return hourlyForecasts;
   }
 }

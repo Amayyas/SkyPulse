@@ -17,7 +17,9 @@ class HourlyForecast extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final unit = ref.watch(unitProvider);
     final locale = Localizations.localeOf(context).languageCode;
-    final next24Hours = forecast.take(24).toList();
+    // The API issues one reading every 3 hours, so 8 of them cover a day.
+    // Each card is a real forecast — nothing here is interpolated.
+    final next24Hours = forecast.take(8).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
