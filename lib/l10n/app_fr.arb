@@ -1,24 +1,20 @@
 {
   "@@locale": "fr",
-
   "loading": "Chargement…",
   "genericError": "Erreur",
   "settings": "Paramètres",
   "retry": "Réessayer",
   "openSettings": "Ouvrir les réglages",
-
   "searchCityTitle": "Rechercher une ville",
   "searchCityHint": "Entrez le nom de la ville",
   "useCurrentLocation": "Utiliser ma position actuelle",
   "noCityFound": "Aucune ville ne correspond à « {query} »",
-
   "humidity": "Humidité",
   "wind": "Vent",
   "windWithDirection": "Vent {direction}",
   "feelsLike": "Ressenti",
   "pressure": "Pression",
   "visibility": "Visibilité",
-
   "compassN": "N",
   "compassNE": "NE",
   "compassE": "E",
@@ -27,10 +23,8 @@
   "compassSW": "SO",
   "compassW": "O",
   "compassNW": "NO",
-
   "hourlyForecast": "Prévisions horaires",
   "dailyForecast": "{count, plural, =1{Prévisions sur 1 jour} other{Prévisions sur {count} jours}}",
-
   "errApiKeyMissingTitle": "Clé API non configurée",
   "errApiKeyMissingHint": "Aucune clé OpenWeatherMap n’a été fournie au build. Lancez avec --dart-define=OWM_API_KEY=votre_clé (voir le README).",
   "errApiKeyInvalidTitle": "Clé API invalide",
@@ -56,11 +50,11 @@
   "errLocationTimeoutHint": "Impossible d’obtenir votre position à temps. Réessayez, ou recherchez une ville.",
   "errGenericTitle": "Une erreur est survenue",
   "errGenericHint": "Réessayez dans un instant.",
-
   "settingsUnitsTitle": "Unités",
   "settingsMetricLabel": "Métrique (°C, km/h)",
   "settingsImperialLabel": "Impérial (°F, mph)",
   "settingsPreviewTitle": "Aperçu",
   "settingsTempPreview": "Température (25 °C)",
-  "settingsWindPreview": "Vent (5.14 m/s)"
+  "settingsWindPreview": "Vent (5.14 m/s)",
+  "offlineCached": "Hors ligne — données de {time}"
 }

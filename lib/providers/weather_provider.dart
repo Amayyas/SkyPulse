@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skypulse/models/weather_model.dart';
 import 'package:skypulse/models/city_suggestion.dart';
 import 'package:skypulse/services/location_service.dart';
+import 'package:skypulse/services/weather_cache.dart';
+import 'package:skypulse/services/weather_exception.dart';
 import 'package:skypulse/services/weather_service.dart';
 
 /// Holds the SharedPreferences instance loaded once at startup in `main()` and
@@ -67,43 +69,71 @@ final selectedCityProvider =
       SelectedCityNotifier.new,
     );
 
-// Provider for the current weather.
-final currentWeatherProvider = FutureProvider<Weather>((ref) async {
-  final weatherService = ref.watch(weatherServiceProvider);
-  final selectedCity = ref.watch(selectedCityProvider);
+final weatherCacheProvider = Provider<WeatherCache>((ref) {
+  return WeatherCache(ref.watch(sharedPreferencesProvider));
+});
 
+/// The coordinates to show weather for: the selected city, or the GPS position.
+///
+/// Kept separate so both weather providers resolve the location the same way,
+/// and so the cache is keyed on it.
+Future<({double lat, double lon, String? cityName})> _targetLocation(
+  Ref ref,
+) async {
+  final selectedCity = ref.watch(selectedCityProvider);
   if (selectedCity != null) {
-    // If a city is selected, use its coordinates.
-    final weather = await weatherService.getCurrentWeather(
-      selectedCity.lat,
-      selectedCity.lon,
+    return (
+      lat: selectedCity.lat,
+      lon: selectedCity.lon,
+      cityName: selectedCity.name,
+    );
+  }
+  final position = await ref.watch(currentLocationProvider.future);
+  return (lat: position.latitude, lon: position.longitude, cityName: null);
+}
+
+// Provider for the current weather.
+//
+// Network first; on failure, fall back to the last successful response for this
+// location so the app still shows something offline. The result carries whether
+// it came from cache, so the UI can say so instead of passing old weather off
+// as current.
+final currentWeatherProvider = FutureProvider<Cached<Weather>>((ref) async {
+  final weatherService = ref.watch(weatherServiceProvider);
+  final cache = ref.watch(weatherCacheProvider);
+  final target = await _targetLocation(ref);
+
+  try {
+    var weather = await weatherService.getCurrentWeather(
+      target.lat,
+      target.lon,
     );
     // Force the city name to the one we searched for, not the weather API's
     // (two cities can share the same coordinates).
-    return weather.copyWith(cityName: selectedCity.name);
+    if (target.cityName != null) {
+      weather = weather.copyWith(cityName: target.cityName);
+    }
+    await cache.saveCurrent(target.lat, target.lon, weather);
+    return Cached.fresh(weather);
+  } on WeatherException {
+    final cached = cache.readCurrent(target.lat, target.lon);
+    if (cached != null) return cached;
+    rethrow; // nothing cached: the error is all we have to show
   }
-
-  // Default to the GPS position.
-  final position = await ref.watch(currentLocationProvider.future);
-  return await weatherService.getCurrentWeather(
-    position.latitude,
-    position.longitude,
-  );
 });
 
-final forecastProvider = FutureProvider<List<Weather>>((ref) async {
+final forecastProvider = FutureProvider<Cached<List<Weather>>>((ref) async {
   final weatherService = ref.watch(weatherServiceProvider);
-  final selectedCity = ref.watch(selectedCityProvider);
+  final cache = ref.watch(weatherCacheProvider);
+  final target = await _targetLocation(ref);
 
-  if (selectedCity != null) {
-    // If a city is selected, use its coordinates.
-    return await weatherService.getForecast(selectedCity.lat, selectedCity.lon);
+  try {
+    final forecast = await weatherService.getForecast(target.lat, target.lon);
+    await cache.saveForecast(target.lat, target.lon, forecast);
+    return Cached.fresh(forecast);
+  } on WeatherException {
+    final cached = cache.readForecast(target.lat, target.lon);
+    if (cached != null) return cached;
+    rethrow;
   }
-
-  // Default to the GPS position.
-  final position = await ref.watch(currentLocationProvider.future);
-  return await weatherService.getForecast(
-    position.latitude,
-    position.longitude,
-  );
 });
