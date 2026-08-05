@@ -14,9 +14,29 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      released: ${{ steps.release.outputs.releases_created }}
+      tag: ${{ steps.release.outputs.tag_name }}
     steps:
       - uses: googleapis/release-please-action@v5
+        id: release
         with:
           # Uses release-please-config.json + .release-please-manifest.json.
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  # Build and attach the downloadable artifacts for the release just created.
+  # Called explicitly rather than via `release: published`: GitHub does not emit
+  # trigger events for actions taken with the default GITHUB_TOKEN, so that
+  # trigger would never fire here.
+  artifacts:
+    needs: release-please
+    if: needs.release-please.outputs.released == 'true'
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/release.yml
+    with:
+      tag: ${{ needs.release-please.outputs.tag }}
+    secrets: inherit
