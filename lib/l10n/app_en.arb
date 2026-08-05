@@ -37,7 +37,7 @@
   "compassSW": "SW",
   "compassW": "W",
   "compassNW": "NW",
-  "hourlyForecast": "Hourly forecast",
+  "hourlyForecast": "Next 24 hours",
   "dailyForecast": "{count, plural, other{{count}-day forecast}}",
   "@dailyForecast": {
     "placeholders": {

@@ -23,7 +23,7 @@
   "compassSW": "SO",
   "compassW": "O",
   "compassNW": "NO",
-  "hourlyForecast": "Prévisions horaires",
+  "hourlyForecast": "Prochaines 24 heures",
   "dailyForecast": "{count, plural, =1{Prévisions sur 1 jour} other{Prévisions sur {count} jours}}",
   "errApiKeyMissingTitle": "Clé API non configurée",
   "errApiKeyMissingHint": "Aucune clé OpenWeatherMap n’a été fournie au build. Lancez avec --dart-define=OWM_API_KEY=votre_clé (voir le README).",

@@ -31,7 +31,7 @@ builds:
 
 - 🌡️ **Current conditions** — temperature, feels-like, humidity, wind (with
   direction), pressure and visibility
-- ⏰ **Hourly forecast** — the next 24 hours, with the chance of rain per hour
+- ⏰ **Next 24 hours** — the API's 3-hourly readings, with the chance of rain for each
 - 📅 **5-day forecast** — the free OpenWeatherMap tier covers 5 days
 - 🎨 **Dynamic theme** — the palette shifts with the time of day (dawn, morning,
   afternoon, evening, dusk, night) and updates live as the day goes on
@@ -76,15 +76,16 @@ Without a key the app runs but shows an "API key not configured" screen.
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development setup (note:
 code generation is a **required** step).
 
-## 📊 Interpolated hourly forecast
+## 📊 About the forecast data
 
-The free `/forecast` endpoint returns data every 3 hours. SkyPulse linearly
-interpolates temperature, feels-like, humidity and wind between those points to
-show a continuous hourly strip.
+The free `/forecast` endpoint returns one reading every 3 hours, so the strip
+across the top shows **8 real readings covering the next 24 hours** — not
+smoothed, not filled in.
 
-> ⚠️ Interpolation fills in *numbers*; the weather icon and description of an
-> interpolated hour are carried from the preceding 3-hour slot, so a sunny→rainy
-> transition can appear one slot late. Improving this is tracked in the issues.
+SkyPulse used to interpolate those into 24 hourly points. It looked richer, but
+the icon and description of an invented hour were copied from the preceding
+slot, so a sunny 18:00 reading showed a sun at 19:00 and 20:00 even when 21:00
+said rain. Every point you see is now one the forecaster actually issued.
 
 ## 🎨 Dynamic themes
 

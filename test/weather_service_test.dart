@@ -96,38 +96,47 @@ void main() {
       verifyNever(mockClient.get(any));
     });
 
-    test('getForecast carries pop through interpolation', () async {
-      // Two real 3h slots; the interpolated hours between them carry the
-      // leading slot's pop, the way they already carry its icon.
-      Map<String, dynamic> slot(int dt, double pop) => {
-        'dt': dt,
-        'main': {
-          'temp': 20.0,
-          'feels_like': 20.0,
-          'temp_min': 20.0,
-          'temp_max': 20.0,
-          'humidity': 50,
-        },
-        'weather': [
-          {'description': 'rain', 'icon': '10d'},
-        ],
-        'wind': {'speed': 3.0},
-        'pop': pop,
-      };
-      final body =
-          '{"list": [${jsonEncode(slot(1638360000, 0.4))}, '
-          '${jsonEncode(slot(1638370800, 0.9))}]}';
+    // #10: the service used to expand these into 24 hourly points, copying the
+    // icon and description from the preceding slot — so a sunny 18:00 reading
+    // showed a sun at 19:00 and 20:00 even when 21:00 said rain. Every entry
+    // returned now comes straight from the API.
+    test(
+      'getForecast returns the API slots untouched, none invented',
+      () async {
+        Map<String, dynamic> slot(int dt, double pop, String icon) => {
+          'dt': dt,
+          'main': {
+            'temp': 20.0,
+            'feels_like': 20.0,
+            'temp_min': 20.0,
+            'temp_max': 20.0,
+            'humidity': 50,
+          },
+          'weather': [
+            {'description': 'rain', 'icon': icon},
+          ],
+          'wind': {'speed': 3.0},
+          'pop': pop,
+        };
+        final body =
+            '{"list": [${jsonEncode(slot(1638360000, 0.4, '01d'))}, '
+            '${jsonEncode(slot(1638370800, 0.9, '10d'))}]}';
 
-      when(
-        mockClient.get(any),
-      ).thenAnswer((_) async => http.Response(body, 200));
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response(body, 200));
 
-      final forecast = await weatherService.getForecast(48.8566, 2.3522);
+        final forecast = await weatherService.getForecast(48.8566, 2.3522);
 
-      expect(forecast.first.pop, 0.4);
-      // The interpolated hours after the first slot keep its pop.
-      expect(forecast[1].pop, 0.4);
-    });
+        expect(forecast, hasLength(2), reason: 'two slots in, two slots out');
+        expect(forecast[0].pop, 0.4);
+        expect(forecast[0].iconCode, '01d');
+        // The second slot keeps its own icon and pop rather than inheriting the
+        // first one's — the exact confusion the interpolation used to create.
+        expect(forecast[1].pop, 0.9);
+        expect(forecast[1].iconCode, '10d');
+      },
+    );
 
     // The service used to answer every failure with fabricated demo weather.
     // A failing request must now throw, and throw something the UI can tell
