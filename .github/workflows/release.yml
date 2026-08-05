@@ -3,11 +3,19 @@ name: release-artifacts
 # Builds the downloadable artifacts for a release and attaches them to it, and
 # deploys the web build to GitHub Pages.
 #
-# Triggered when a GitHub Release is published — which release-please does when
-# its release PR is merged. Can also be run by hand against an existing tag.
+# Invoked by release-please.yml right after it creates a release, or by hand
+# against an existing tag.
 on:
-  release:
-    types: [published]
+  # Called by release-please once it has created a release. GitHub deliberately
+  # does not emit trigger events for actions performed with the default
+  # GITHUB_TOKEN (an anti-recursion measure), so a `release: published` trigger
+  # never fires for a release-please release — hence the explicit call.
+  workflow_call:
+    inputs:
+      tag:
+        description: "Tag to build and attach to"
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
       tag:
@@ -31,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          ref: ${{ inputs.tag }}
           # This workflow holds contents:write and the API key secret; don't
           # leave the token sitting in .git/config afterwards. Nothing here
           # pushes over git (uploads use GH_TOKEN, Pages uses OIDC).
@@ -55,7 +63,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          TAG="${{ inputs.tag }}"
           gh release upload "$TAG" \
             build/app/outputs/flutter-apk/*-release.apk --clobber
 
@@ -78,7 +86,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          ref: ${{ inputs.tag }}
           # This workflow holds contents:write and the API key secret; don't
           # leave the token sitting in .git/config afterwards. Nothing here
           # pushes over git (uploads use GH_TOKEN, Pages uses OIDC).
@@ -105,7 +113,7 @@ jobs:
       - name: Package
         shell: bash
         run: |
-          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          TAG="${{ inputs.tag }}"
           OS=$(echo "${{ runner.os }}" | tr '[:upper:]' '[:lower:]')
           cd "${{ matrix.path }}"
           7z a "$GITHUB_WORKSPACE/skypulse-$TAG-$OS-x64.zip" .
@@ -115,7 +123,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          TAG="${{ inputs.tag }}"
           OS=$(echo "${{ runner.os }}" | tr '[:upper:]' '[:lower:]')
           gh release upload "$TAG" "skypulse-$TAG-$OS-x64.zip" --clobber
 
@@ -132,7 +140,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          ref: ${{ inputs.tag }}
           # This workflow holds contents:write and the API key secret; don't
           # leave the token sitting in .git/config afterwards. Nothing here
           # pushes over git (uploads use GH_TOKEN, Pages uses OIDC).
