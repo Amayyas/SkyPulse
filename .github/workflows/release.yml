@@ -1,0 +1,149 @@
+name: release-artifacts
+
+# Builds the downloadable artifacts for a release and attaches them to it, and
+# deploys the web build to GitHub Pages.
+#
+# Triggered when a GitHub Release is published — which release-please does when
+# its release PR is merged. Can also be run by hand against an existing tag.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build and attach to (e.g. v0.1.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: "3.44.4"
+  # An unset secret yields an empty key: the build still compiles, and the app
+  # shows its "API key not configured" screen rather than fake weather (#1, #26).
+  OWM_API_KEY: ${{ secrets.OWM_API_KEY }}
+
+jobs:
+  android:
+    name: Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      # Split per ABI: three smaller APKs instead of one fat universal build.
+      - name: Build APKs
+        run: |
+          flutter build apk --release --split-per-abi \
+            --dart-define=OWM_API_KEY=$OWM_API_KEY
+
+      - name: Attach to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          gh release upload "$TAG" \
+            build/app/outputs/flutter-apk/*-release.apk --clobber
+
+  desktop:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux bundle
+            os: ubuntu-latest
+            build: flutter build linux --release
+            path: build/linux/x64/release/bundle
+          - name: Windows bundle
+            os: windows-latest
+            build: flutter build windows --release
+            path: build/windows/x64/runner/Release
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libgtk-3-dev clang cmake pkg-config
+
+      - run: flutter pub get
+
+      - name: Build
+        run: ${{ matrix.build }} --dart-define=OWM_API_KEY=$OWM_API_KEY
+        shell: bash
+
+      - name: Package
+        shell: bash
+        run: |
+          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          OS=$(echo "${{ runner.os }}" | tr '[:upper:]' '[:lower:]')
+          cd "${{ matrix.path }}"
+          7z a "$GITHUB_WORKSPACE/skypulse-$TAG-$OS-x64.zip" .
+
+      - name: Attach to release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          OS=$(echo "${{ runner.os }}" | tr '[:upper:]' '[:lower:]')
+          gh release upload "$TAG" "skypulse-$TAG-$OS-x64.zip" --clobber
+
+  web:
+    name: Web demo (GitHub Pages)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      # The site is served from /SkyPulse/, not the domain root.
+      - name: Build web
+        run: |
+          flutter build web --release \
+            --base-href /SkyPulse/ \
+            --dart-define=OWM_API_KEY=$OWM_API_KEY
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+      - id: deploy
+        uses: actions/deploy-pages@v4
