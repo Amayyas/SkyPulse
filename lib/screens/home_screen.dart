@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/providers/weather_provider.dart';
+import 'package:skypulse/services/weather_cache.dart';
 import 'package:skypulse/screens/search_screen.dart';
 import 'package:skypulse/screens/settings_screen.dart';
 import 'package:skypulse/widgets/current_weather.dart';
@@ -60,10 +61,13 @@ class HomeScreen extends ConsumerWidget {
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 children: [
-                  // Only shown when the data came from cache, so old weather is
-                  // never passed off as current.
-                  if (weather.isStale)
-                    _OfflineBanner(cachedAt: weather.cachedAt!),
+                  // Shown when *either* result came from cache — the two can
+                  // fall back independently, and stale forecasts must be
+                  // flagged just as much as stale current conditions. The
+                  // oldest timestamp is used, so the banner never claims the
+                  // data is fresher than its stalest part.
+                  if (stalestAmong([weather, forecast]) case final cachedAt?)
+                    _OfflineBanner(cachedAt: cachedAt),
                   CurrentWeather(weather: weather.data),
                   HourlyForecast(forecast: forecast.data),
                   DailyForecast(forecast: forecast.data),
@@ -162,7 +166,9 @@ class _OfflineBanner extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              l10n.offlineCached(DateFormat.Hm(locale).format(cachedAt)),
+              l10n.offlineCached(
+                DateFormat.yMd(locale).add_Hm().format(cachedAt),
+              ),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: scheme.onSecondaryContainer,
               ),

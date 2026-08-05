@@ -42,6 +42,10 @@ Weather _sample() => Weather.fromJson({
   'wind': {'speed': 4.2, 'deg': 180},
   'visibility': 8000,
   'dt': 1638360000,
+  // Populated so the round-trip test actually exercises these — null-to-null
+  // would pass whether or not they were serialised.
+  'coord': {'lat': 45.7640, 'lon': 4.8357},
+  'sys': {'sunrise': 1638340000, 'sunset': 1638380000},
   'name': 'Lyon',
 });
 
@@ -58,15 +62,22 @@ void main() {
 
       expect(restored.cityName, original.cityName);
       expect(restored.temperature, original.temperature);
+      expect(restored.feelsLike, original.feelsLike);
+      expect(restored.tempMin, original.tempMin);
+      expect(restored.tempMax, original.tempMax);
       expect(restored.description, original.description);
       expect(restored.iconCode, original.iconCode);
       expect(restored.humidity, original.humidity);
       expect(restored.windSpeed, original.windSpeed);
       expect(restored.date, original.date);
+      expect(restored.sunrise, original.sunrise);
+      expect(restored.sunset, original.sunset);
+      expect(restored.lat, original.lat);
+      expect(restored.lon, original.lon);
+      expect(restored.pop, original.pop);
       expect(restored.pressure, original.pressure);
       expect(restored.windDeg, original.windDeg);
       expect(restored.visibility, original.visibility);
-      expect(restored.pop, original.pop);
     });
   });
 
@@ -188,5 +199,35 @@ void main() {
     // path are covered directly instead — the cache returns null when empty
     // ("returns null for a location never cached", above), and the service
     // throws on a network failure (weather_service_test.dart).
+  });
+
+  // Regression: the banner used to key off the current weather only, so a
+  // network-fresh current + cached forecast rendered stale data with no
+  // indicator at all.
+  group('stalestAmong', () {
+    final older = DateTime(2026, 7, 20, 9, 0);
+    final newer = DateTime(2026, 7, 21, 18, 30);
+
+    test('null when everything is fresh', () {
+      expect(
+        stalestAmong([const Cached.fresh(1), const Cached.fresh(2)]),
+        isNull,
+      );
+    });
+
+    test('flags staleness even if only one entry is cached', () {
+      expect(
+        stalestAmong([const Cached.fresh(1), Cached.stale(2, older)]),
+        older,
+        reason: 'a stale forecast must be flagged, not just stale current data',
+      );
+    });
+
+    test('reports the oldest timestamp, never the freshest', () {
+      expect(
+        stalestAmong([Cached.stale(1, newer), Cached.stale(2, older)]),
+        older,
+      );
+    });
   });
 }

@@ -18,6 +18,18 @@ class Cached<T> {
   bool get isStale => cachedAt != null;
 }
 
+/// The oldest cache timestamp among [entries], or null when every one is fresh.
+///
+/// The screen shows a single offline banner for several results that can fall
+/// back independently — current weather might come from the network while the
+/// forecast comes from cache. Taking the oldest means the banner never claims
+/// the data is fresher than its stalest part.
+DateTime? stalestAmong(Iterable<Cached<Object?>> entries) {
+  final times = entries.map((e) => e.cachedAt).whereType<DateTime>().toList();
+  if (times.isEmpty) return null;
+  return times.reduce((a, b) => a.isBefore(b) ? a : b);
+}
+
 /// Stores the last successful weather response per location, so the app has
 /// something to show when the network is gone.
 class WeatherCache {
