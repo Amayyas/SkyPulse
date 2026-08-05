@@ -4,6 +4,13 @@ All notable changes are recorded here. This file is maintained automatically by
 [release-please](https://github.com/googleapis/release-please) from
 [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [0.2.1](https://github.com/Amayyas/SkyPulse/compare/v0.2.0...v0.2.1) (2026-08-05)
+
+
+### Bug Fixes
+
+* stop inventing hourly forecasts, show the API's real readings ([c1ff583](https://github.com/Amayyas/SkyPulse/commit/c1ff5838f6d0e6596ac9957ca8f70696f650719f)), closes [#10](https://github.com/Amayyas/SkyPulse/issues/10)
+
 ## [0.2.0](https://github.com/Amayyas/SkyPulse/compare/v0.1.0...v0.2.0) (2026-08-05)
 
 
