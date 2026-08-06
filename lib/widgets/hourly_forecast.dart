@@ -6,6 +6,7 @@ import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/models/weather_model.dart';
 import 'package:skypulse/providers/unit_provider.dart';
 import 'package:skypulse/utils/unit_utils.dart';
+import 'package:skypulse/utils/weather_text.dart';
 import 'package:skypulse/widgets/weather_icon.dart';
 
 class HourlyForecast extends ConsumerWidget {
@@ -35,41 +36,65 @@ class HourlyForecast extends ConsumerWidget {
         ),
         const SizedBox(height: 10),
         SizedBox(
-          height: 140,
+          // Scales with the user's text size: a fixed height clipped the card
+          // at large scales, hiding the temperature entirely.
+          height: 140 * MediaQuery.textScalerOf(context).scale(1).clamp(1, 2),
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: next24Hours.length,
             itemBuilder: (context, index) {
               final weather = next24Hours[index];
-              return Card(
-                    margin: const EdgeInsets.only(left: 16, top: 4, bottom: 4),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 8.0,
+              // One coherent label per card instead of three loose nodes: a
+              // screen reader announces "14:00, 18°, light rain, 60% chance of
+              // rain" rather than reading fragments with no icon at all.
+              return Semantics(
+                    label: [
+                      DateFormat.j(locale).format(weather.date),
+                      UnitConverter.formatTempRounded(
+                        weather.temperature,
+                        unit,
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            DateFormat.j(locale).format(weather.date),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          const SizedBox(height: 4),
-                          WeatherIcon(iconCode: weather.iconCode, size: 40),
-                          const SizedBox(height: 4),
-                          Text(
-                            UnitConverter.formatTempRounded(
-                              weather.temperature,
-                              unit,
+                      describeWeather(weather.description, locale),
+                      if (weather.pop > 0)
+                        AppLocalizations.of(
+                          context,
+                        ).chanceOfRain((weather.pop.clamp(0, 1) * 100).round()),
+                    ].join(', '),
+                    excludeSemantics: true,
+                    child: Card(
+                      margin: const EdgeInsets.only(
+                        left: 16,
+                        top: 4,
+                        bottom: 4,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0,
+                          vertical: 8.0,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              DateFormat.j(locale).format(weather.date),
+                              style: Theme.of(context).textTheme.bodyMedium,
                             ),
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 4),
-                          _PrecipitationChance(pop: weather.pop),
-                        ],
+                            const SizedBox(height: 4),
+                            WeatherIcon(iconCode: weather.iconCode, size: 40),
+                            const SizedBox(height: 4),
+                            Text(
+                              UnitConverter.formatTempRounded(
+                                weather.temperature,
+                                unit,
+                              ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 4),
+                            _PrecipitationChance(pop: weather.pop),
+                          ],
+                        ),
                       ),
                     ),
                   )

@@ -6,6 +6,7 @@ import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/models/weather_model.dart';
 import 'package:skypulse/providers/unit_provider.dart';
 import 'package:skypulse/utils/unit_utils.dart';
+import 'package:skypulse/utils/weather_text.dart';
 import 'package:skypulse/widgets/weather_icon.dart';
 
 class DailyForecast extends ConsumerWidget {
@@ -94,43 +95,54 @@ class DailyForecast extends ConsumerWidget {
         const SizedBox(height: 10),
         ...List.generate(limitedForecast.length, (index) {
           final weather = limitedForecast[index];
-          return Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 4.0,
+          // One label for the whole row — day, high, low, condition — instead
+          // of a day name, an unlabelled icon and a "24° / 11°" string that
+          // reads as noise.
+          return Semantics(
+            label: AppLocalizations.of(context).dayForecastSemantics(
+              DateFormat('EEEE', locale).format(weather.date),
+              UnitConverter.formatTempRounded(weather.tempMax, unit),
+              UnitConverter.formatTempRounded(weather.tempMin, unit),
+              describeWeather(weather.description, locale),
             ),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        DateFormat('EEEE', locale).format(weather.date),
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
+            excludeSemantics: true,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 4.0,
+              ),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          DateFormat('EEEE', locale).format(weather.date),
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Center(
-                        child: WeatherIcon(
-                          iconCode: weather.iconCode,
-                          size: 40,
+                      Expanded(
+                        flex: 1,
+                        child: Center(
+                          child: WeatherIcon(
+                            iconCode: weather.iconCode,
+                            size: 40,
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        '${UnitConverter.formatTempRounded(weather.tempMax, unit)} / ${UnitConverter.formatTempRounded(weather.tempMin, unit)}',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                        textAlign: TextAlign.right,
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          '${UnitConverter.formatTempRounded(weather.tempMax, unit)} / ${UnitConverter.formatTempRounded(weather.tempMin, unit)}',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          textAlign: TextAlign.right,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

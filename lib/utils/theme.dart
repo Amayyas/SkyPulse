@@ -110,6 +110,10 @@ class AppTheme {
   }
 
   // Afternoon: vivid, bright blue.
+  //
+  // The body colour is #014A82 rather than the lighter #01579B it started as:
+  // against this sky-blue scaffold that only reached 4.25:1, below the 4.5:1
+  // WCAG AA needs for body text (#27).
   static ThemeData _getAfternoonTheme() {
     return ThemeData(
       useMaterial3: true,
@@ -125,14 +129,14 @@ class AppTheme {
         shadowColor: const Color(0xFF1E88E5).withValues(alpha: 0.2),
       ),
       textTheme: GoogleFonts.outfitTextTheme().apply(
-        bodyColor: const Color(0xFF01579B),
+        bodyColor: const Color(0xFF014A82),
         displayColor: const Color(0xFF004D7A),
       ),
       appBarTheme: const AppBarTheme(
         centerTitle: true,
         elevation: 0,
         backgroundColor: Color(0xFF87CEEB),
-        foregroundColor: Color(0xFF01579B),
+        foregroundColor: Color(0xFF014A82),
       ),
     );
   }

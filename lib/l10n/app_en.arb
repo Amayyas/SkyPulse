@@ -98,5 +98,30 @@
         "type": "String"
       }
     }
+  },
+  "chanceOfRain": "{percent}% chance of rain",
+  "dayForecastSemantics": "{day}, high {high}, low {low}, {condition}",
+  "@chanceOfRain": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@dayForecastSemantics": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "high": {
+        "type": "String"
+      },
+      "low": {
+        "type": "String"
+      },
+      "condition": {
+        "type": "String"
+      }
+    }
   }
 }

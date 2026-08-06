@@ -56,5 +56,7 @@
   "settingsPreviewTitle": "Aperçu",
   "settingsTempPreview": "Température (25 °C)",
   "settingsWindPreview": "Vent (5.14 m/s)",
-  "offlineCached": "Hors ligne — données de {time}"
+  "offlineCached": "Hors ligne — données de {time}",
+  "chanceOfRain": "{percent}% de risque de pluie",
+  "dayForecastSemantics": "{day}, maximum {high}, minimum {low}, {condition}"
 }
