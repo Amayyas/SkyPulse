@@ -125,7 +125,19 @@ flutter test --coverage
 The suite covers model parsing (including malformed payloads), the weather and
 location service failure paths, unit conversion, the time-of-day theme buckets,
 city persistence, localisation, and widget tests for the error and forecast
-views.
+views. CI fails if line coverage drops below 80% (currently ~87%).
+
+## 🔖 Versioning
+
+SkyPulse follows [semantic versioning](https://semver.org). Releases are cut by
+[release-please](https://github.com/googleapis/release-please) from
+[Conventional Commits](https://www.conventionalcommits.org): merging a `fix:`
+produces a patch, a `feat:` a minor, and a breaking change a major. Each release
+builds and attaches its own downloadable artifacts.
+
+`1.0.0` means the app is stable and honest about what it shows — not that it is
+finished. Features still on the roadmap (multiple saved cities, a dark-mode
+override) will land in later `1.x` releases.
 
 ## 📦 Main dependencies
 
