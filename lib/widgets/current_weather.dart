@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:skypulse/l10n/app_localizations.dart';
 import 'package:skypulse/models/weather_model.dart';
 import 'package:skypulse/providers/unit_provider.dart';
-import 'package:skypulse/utils/constants.dart';
 import 'package:skypulse/utils/unit_utils.dart';
+import 'package:skypulse/utils/weather_text.dart';
 import 'package:skypulse/widgets/weather_icon.dart';
 
 class CurrentWeather extends ConsumerWidget {
@@ -37,6 +37,7 @@ class CurrentWeather extends ConsumerWidget {
         WeatherIcon(
           iconCode: weather.iconCode,
           size: 100,
+          semanticLabel: describeWeather(weather.description, locale),
         ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
         Text(
           UnitConverter.formatTempRounded(weather.temperature, unit),
@@ -45,7 +46,7 @@ class CurrentWeather extends ConsumerWidget {
           ).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.bold),
         ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2, end: 0),
         Text(
-          _describeWeather(weather.description, locale).toUpperCase(),
+          describeWeather(weather.description, locale).toUpperCase(),
           style: Theme.of(context).textTheme.titleMedium,
         ).animate().fadeIn(delay: 500.ms),
         const SizedBox(height: 20),
@@ -100,16 +101,6 @@ class CurrentWeather extends ConsumerWidget {
     return labels[UnitConverter.windDirectionIndex(degrees)];
   }
 
-  /// The weather condition text. The API returns English; in French we run it
-  /// through the translation dictionary, in English we show it as-is. (Keying
-  /// the dictionary on the OpenWeatherMap condition id is a separate follow-up.)
-  String _describeWeather(String description, String locale) {
-    if (locale == 'fr') {
-      return AppConstants.translateWeatherDescription(description);
-    }
-    return description;
-  }
-
   /// Pressure and visibility, shown only when the response carried them, so the
   /// row simply doesn't appear rather than showing blanks.
   List<Widget> _secondaryDetails(BuildContext context, UnitSystem unit) {
@@ -138,18 +129,22 @@ class CurrentWeather extends ConsumerWidget {
     String value,
     String label,
   ) {
-    return Column(
-      children: [
-        Icon(icon, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        Text(label, style: Theme.of(context).textTheme.bodySmall),
-      ],
+    return Semantics(
+      label: '$label, $value',
+      excludeSemantics: true,
+      child: Column(
+        children: [
+          Icon(icon, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          Text(label, style: Theme.of(context).textTheme.bodySmall),
+        ],
+      ),
     );
   }
 }

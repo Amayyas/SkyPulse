@@ -7,6 +7,7 @@ import 'package:skypulse/providers/theme_provider.dart';
 import 'package:skypulse/providers/weather_provider.dart';
 import 'package:skypulse/screens/home_screen.dart';
 import 'package:skypulse/utils/theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +58,12 @@ class _SkyPulseAppState extends ConsumerState<SkyPulseApp>
   @override
   Widget build(BuildContext context) {
     final bucket = ref.watch(timeOfDayThemeProvider);
+    // Honour the OS "reduce motion" setting: some users disable animations for
+    // vestibular reasons, and the entrance animations run on every card.
+    Animate.restartOnHotReload = false;
+    if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) {
+      Animate.defaultDuration = Duration.zero;
+    }
 
     return MaterialApp(
       title: 'SkyPulse',
