@@ -4,6 +4,13 @@ All notable changes are recorded here. This file is maintained automatically by
 [release-please](https://github.com/googleapis/release-please) from
 [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [0.3.0](https://github.com/Amayyas/SkyPulse/compare/v0.2.2...v0.3.0) (2026-08-06)
+
+
+### Features
+
+* make the app usable with a screen reader and at large text sizes ([a7e1d94](https://github.com/Amayyas/SkyPulse/commit/a7e1d94cc76be20f2cf685577872f3a305900ca7)), closes [#27](https://github.com/Amayyas/SkyPulse/issues/27)
+
 ## [0.2.2](https://github.com/Amayyas/SkyPulse/compare/v0.2.1...v0.2.2) (2026-08-05)
 
 
