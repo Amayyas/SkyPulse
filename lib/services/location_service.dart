@@ -6,7 +6,11 @@ import 'package:geolocator/geolocator.dart'
 import 'package:skypulse/services/location_exception.dart';
 
 class LocationService {
-  static const Duration _timeout = Duration(seconds: 10);
+  /// [timeout] is injectable so tests can exercise the timeout branch without
+  /// actually waiting ten seconds.
+  const LocationService({this.timeout = const Duration(seconds: 10)});
+
+  final Duration timeout;
 
   /// Returns the device position, or throws a [LocationException] naming the
   /// exact reason it could not — so the UI can react to each case instead of
@@ -33,7 +37,7 @@ class LocationService {
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high,
         ),
-      ).timeout(_timeout);
+      ).timeout(timeout);
     } on TimeoutException {
       throw const LocationTimeoutException();
     }

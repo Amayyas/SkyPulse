@@ -45,6 +45,12 @@ jobs:
       - name: Test
         run: flutter test --coverage
 
+      # Fails if line coverage drops below the floor. Generated localisations
+      # are excluded — their uncovered lines are translations no test happens to
+      # render, which measures noise rather than test quality.
+      - name: Check coverage floor
+        run: dart run tool/check_coverage.dart
+
       - uses: actions/upload-artifact@v7
         with:
           name: coverage

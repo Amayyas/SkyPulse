@@ -57,6 +57,10 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   build_runner: ^2.7.1
   mockito: ^5.4.4
+  # Lets tests swap GeolocatorPlatform.instance for a fake, so LocationService
+  # can be tested without a device.
+  plugin_platform_interface: ^2.1.8
+  geolocator_platform_interface: ^4.2.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
