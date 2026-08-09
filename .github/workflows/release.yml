@@ -174,4 +174,4 @@ jobs:
         with:
           path: build/web
       - id: deploy
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
